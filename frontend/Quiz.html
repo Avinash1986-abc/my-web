@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Studio — Rural Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-lt: #f0fdf4;
+            --text: #1e293b;
+            --muted: #64748b;
+            --bg: #f8fafc;
+            --border: #f1f5f9;
+            --red: #ef4444;
+            --ink: #111827;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
+        body { background: var(--bg); color: var(--text); opacity: 0; transition: opacity 0.4s; display: flex; }
+        
+        .wrap { display: flex; width: 100%; min-height: 100vh; }
+
+        /* --- SIDEBAR --- */
+        .side {
+            width: 280px; background: #fff; border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem; display: flex; flex-direction: column;
+            position: sticky; top: 0; height: 100vh; flex-shrink: 0;
+        }
+        .logo { font-size: 1.6rem; font-weight: 800; color: #1e293b; margin-bottom: 2.5rem; text-decoration: none; }
+        .logo span { color: var(--primary); }
+        .nav-section-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; margin: 1.5rem 0 0.8rem 0.8rem; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--muted); font-size: 0.95rem; font-weight: 600; border-radius: 12px; transition: 0.2s; margin-bottom: 4px; }
+        .nav-link:hover { background: var(--bg); color: var(--text); }
+        .nav-link.on { background: var(--primary-lt); color: var(--primary); }
+        .nav-link i { font-style: normal; font-size: 1.2rem; }
+        .sign-out { margin-top: auto; color: var(--red) !important; }
+
+        /* --- CONTENT --- */
+        .main { flex: 1; padding: 3rem; max-width: 1100px; margin: 0 auto; }
+        #teacher-view, #student-view, #quiz-player-view, #quiz-result-view { display: none; }
+
+        .card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .fg { margin-bottom: 1.2rem; }
+        label { display: block; font-size: .7rem; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; color: var(--muted); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: #fcfcfc; font-family: inherit; }
+        
+        .btn { padding: 12px 25px; border-radius: 10px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-ink { background: var(--ink); color: white; }
+        .btn-danger { background: #fee2e2; color: var(--red); font-size: 0.8rem; }
+
+        /* --- TABLE STYLE --- */
+        .q-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 15px; overflow: hidden; border: 1px solid var(--border); }
+        .q-table th { text-align: left; padding: 15px; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        .q-table td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+        .view-q-panel { display: none; background: #fafafa; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 0.85rem; border: 1px solid var(--border); }
+        
+        .tag { background: var(--primary-lt); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+        .timer { font-size: 1.5rem; font-weight: 700; color: var(--red); }
+        .option-btn { width: 100%; padding: 1.2rem; border: 2px solid var(--border); border-radius: 12px; background: white; cursor: pointer; text-align: left; margin-bottom: 10px; }
+        .option-btn.selected { border-color: var(--primary); background: var(--primary-lt); font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div class="wrap">
+    <aside class="side">
+        <a href="#" class="logo">Rural<span>Learning</span></a>
+        <nav id="side-nav" style="display: contents;"></nav>
+    </aside>
+
+    <main class="main">
+        <!-- TEACHER: CREATE & MANAGE -->
+        <div id="teacher-view">
+            <h1 style="margin-bottom:2rem;">Quiz Studio</h1>
+            
+            <!-- STEP 1 & 2 FORM (KEEPING YOUR DESIGN) -->
+            <div class="card">
+                <div style="font-weight:700; margin-bottom:1.5rem;">Create New Quiz</div>
+                <div class="form-grid">
+                    <div class="fg"><label>Quiz Title</label><input id="qTitle" type="text" placeholder="Science Mock Test"></div>
+                    <div class="fg"><label>Subject</label><input id="qSubject" type="text" placeholder="Biology"></div>
+                    <div class="fg"><label>Duration (Mins)</label><input id="qDuration" type="number" value="15"></div>
+                    <div class="fg"><label>Target Class</label><input id="qClass" type="text" placeholder="10th Std"></div>
+                </div>
+                <div style="border-top: 1px solid #eee; padding-top: 20px;">
+                    <label>Question Text</label>
+                    <textarea id="currQ" rows="2" placeholder="Enter your question here..."></textarea>
+                    <div class="form-grid" style="margin-top:15px;">
+                        <input id="optA" type="text" placeholder="Option A">
+                        <input id="optB" type="text" placeholder="Option B">
+                        <input id="optC" type="text" placeholder="Option C">
+                        <input id="optD" type="text" placeholder="Option D">
+                    </div>
+                    <div style="display:flex; gap:15px; align-items:center; margin-top:15px;">
+                        <select id="correctAns" style="width:200px;"><option value="A">Answer: A</option><option value="B">Answer: B</option><option value="C">Answer: C</option><option value="D">Answer: D</option></select>
+                        <button class="btn btn-ink" onclick="addQuestionToList()">+ Add Question</button>
+                    </div>
+                    <div id="temp-list" style="margin-top:15px;"></div>
+                    <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:15px;" onclick="handlePublishQuiz()">🚀 PUBLISH FULL QUIZ</button>
+                </div>
+            </div>
+
+            <!-- PUBLISHED LIST SECTION -->
+            <h3 style="margin-bottom:15px;">My Published Quizzes</h3>
+            <table class="q-table">
+                <thead><tr><th>Quiz Title</th><th>Subject</th><th>Questions</th><th>Actions</th></tr></thead>
+                <tbody id="teacher-quiz-rows"></tbody>
+            </table>
+        </div>
+
+        <!-- STUDENT: PRACTICE LIST -->
+        <div id="student-view">
+            <h1 style="margin-bottom:2rem;">Practice Quizzes</h1>
+            <div id="quiz-container"></div>
+        </div>
+
+        <!-- PLAYER & RESULTS (MODES REMAINS SAME) -->
+        <div id="quiz-player-view">
+            <div style="display:flex; justify-content:space-between; margin-bottom:2rem;">
+                <h2 id="p-title"></h2>
+                <div class="timer" id="timer-display">00:00</div>
+            </div>
+            <div id="question-area"></div>
+            <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                <button class="btn" style="background:#e2e8f0;" id="prev-btn" onclick="moveQuestion(-1)">← Previous</button>
+                <button class="btn btn-primary" id="next-btn" onclick="moveQuestion(1)">Next →</button>
+            </div>
+            <button class="btn btn-ink" id="submit-btn" style="width:100%; margin-top:20px; display:none;" onclick="handleQuizSubmission()">✅ Submit Final Answers</button>
+        </div>
+
+        <div id="quiz-result-view" style="text-align:center; padding: 4rem 0;">
+            <div style="font-size:3rem; font-weight:800; color:var(--primary);" id="res-pct">0%</div>
+            <h1 id="res-title" style="margin:10px 0;"></h1>
+            <p id="res-desc" style="color:var(--muted); margin-bottom:2rem;"></p>
+            <button class="btn btn-primary" onclick="location.reload()">Back to Home</button>
+        </div>
+    </main>
+</div>
+
+<script>
+let allQuizzes = [];
+let activeQuiz = null;
+let userAnswers = {};
+let currentIdx = 0;
+let timer = null;
+let tempQuestions = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = getUser();
+    if (!user) return window.location.replace('login.html');
+
+    const nav = document.getElementById('side-nav');
+    const sideLinks = `
+        <div class="nav-section-label">Account Settings</div>
+        <a href="student-profile.html" class="nav-link"><i>👤</i> My Profile</a>
+
+    `;
+
+    if (user.role === 'teacher') {
+        nav.innerHTML = `
+            <a href="Dashboard-teacher.html" class="nav-link"><i> 📊  Dashboard</a>
+            <a href="Tutorials.html" class="nav-link"><i>🎥</i>  Video Lectures</a>
+            <a href="Assignments.html" class="nav-link"><i>📝</i> Student Tasks</a>
+            <a href="Quiz.html" class="nav-link on"><i>⏱️</i> Quiz Creator</a>
+            <a href="Materials.html" class="nav-link"><i></i>📄  Study Notes</a>
+            ${sideLinks}
+        `;
+        document.getElementById('teacher-view').style.display = 'block';
+        loadTeacherDashboard();
+    } else {
+        nav.innerHTML = `
+            <a href="Dashboard-student.html" class="nav-link"><i>📊  Dashboard</a>
+            <a href="Tutorials.html" class="nav-link"><i>🎥</i> Video Classes</a>
+            <a href="Assignments-student.html" class="nav-link"><i>📝</i> Assignments</a>
+            <a href="Quiz.html" class="nav-link on"><i>⏱️</i>  Quizzes</a>
+            <a href="Materials.html" class="nav-link"><i></i> 📄 Study Library</a>
+            ${sideLinks}
+        `;
+        document.getElementById('student-view').style.display = 'block';
+        loadStudentQuizzes();
+    }
+    document.body.style.opacity = '1';
+});
+
+// --- TEACHER: MANAGE QUIZZES ---
+async function loadTeacherDashboard() {
+    const res = await AcademicAPI.getQuizzes();
+    const list = Array.isArray(res) ? res : (res.quizzes || []);
+    const container = document.getElementById('teacher-quiz-rows');
+    
+    if (list.length === 0) {
+        container.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--muted);">No quizzes published yet.</td></tr>';
+        return;
+    }
+
+    container.innerHTML = list.map(q => {
+        // Build question preview HTML
+        const qHtml = q.questions ? q.questions.map((item, i) => `
+            <div style="margin-bottom:10px; padding-bottom:5px; border-bottom:1px dashed #eee;">
+                <b>Q${i+1}:</b> ${item.question}<br>
+                <span style="font-size:0.75rem; color:var(--primary);">Correct: Option ${item.correct}</span>
+            </div>
+        `).join('') : 'No questions found.';
+
+        return `
+            <tr>
+                <td><b>${q.title}</b></td>
+                <td><span class="tag">${q.subject}</span></td>
+                <td>${q.q_count || 0} Qns</td>
+                <td>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn" style="background:#f1f5f9; font-size:0.8rem;" onclick="toggleQuestions(${q.id})">👁 View</button>
+                        <button class="btn btn-danger" onclick="deleteQuiz(${q.id})">Delete</button>
+                    </div>
+                    <div id="q-view-${q.id}" class="view-panel view-q-panel">${qHtml}</div>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function toggleQuestions(id) {
+    const el = document.getElementById(`q-view-${id}`);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+}
+
+async function deleteQuiz(id) {
+    if (confirm("Are you sure? This will delete the quiz and all student scores associated with it.")) {
+        const res = await AcademicAPI.deleteQuiz(id);
+        if (res.success) {
+            alert("Quiz Deleted.");
+            loadTeacherDashboard();
+        }
+    }
+}
+
+function addQuestionToList() {
+    const text = document.getElementById('currQ').value.trim();
+    const opts = [
+        document.getElementById('optA').value.trim(),
+        document.getElementById('optB').value.trim(),
+        document.getElementById('optC').value.trim(),
+        document.getElementById('optD').value.trim()
+    ];
+    const correct = document.getElementById('correctAns').value;
+    if (!text || !opts[0] || !opts[1]) return alert("Enter question and at least 2 options.");
+
+    tempQuestions.push({ question: text, options: opts, correct: correct });
+    document.getElementById('temp-list').innerHTML += `<div style="font-size:0.8rem; color:var(--primary); margin-bottom:5px;">✅ Added: ${text.substring(0,30)}...</div>`;
+    document.getElementById('currQ').value = '';
+    ['optA','optB','optC','optD'].forEach(i => document.getElementById(i).value = '');
+}
+
+async function handlePublishQuiz() {
+    if (tempQuestions.length === 0) return alert("Add questions first!");
+    const res = await AcademicAPI.createQuiz({
+        title: document.getElementById('qTitle').value,
+        subject: document.getElementById('qSubject').value,
+        duration: document.getElementById('qDuration').value,
+        targetClass: document.getElementById('qClass').value,
+        questions: tempQuestions
+    });
+    if (res.success) {
+        alert("Published Successfully!");
+        location.reload();
+    }
+}
+
+// --- STUDENT: TAKE QUIZ ---
+async function loadStudentQuizzes() {
+    const data = await AcademicAPI.getQuizzes();
+    allQuizzes = Array.isArray(data) ? data : (data.quizzes || []);
+    const container = document.getElementById('quiz-container');
+
+    container.innerHTML = allQuizzes.map(q => {
+        const isDone = q.attempted === true;
+        return `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem;">
+                <div>
+                    <h3 style="margin-bottom:5px;">${q.title}</h3>
+                    <span class="tag">${q.subject}</span> <span class="tag" style="background:#f1f5f9; color:#64748b;">⏱ ${q.duration}m</span>
+                </div>
+                ${isDone ? `<span style="color:var(--primary); font-weight:700;">✅ Score: ${q.lastScore}/${q.lastTotal}</span>` 
+                         : `<button class="btn btn-primary" onclick="startQuiz(${q.id})">Start Quiz →</button>`}
+            </div>
+        `;
+    }).join('');
+}
+
+function startQuiz(id) {
+    activeQuiz = allQuizzes.find(q => q.id === id);
+    userAnswers = {}; currentIdx = 0;
+    document.getElementById('student-view').style.display = 'none';
+    document.getElementById('quiz-player-view').style.display = 'block';
+    document.getElementById('p-title').innerText = activeQuiz.title;
+    renderQuestion();
+    startTimer(activeQuiz.duration * 60);
+}
+
+function renderQuestion() {
+    const q = activeQuiz.questions[currentIdx];
+    const opts = [q.opt_a, q.opt_b, q.opt_c, q.opt_d];
+    const keys = ['A', 'B', 'C', 'D'];
+    document.getElementById('question-area').innerHTML = `
+        <div class="card">
+            <h2 style="margin-bottom:1.5rem;">${q.question}</h2>
+            ${opts.map((opt, i) => opt ? `<button class="option-btn ${userAnswers[currentIdx] === keys[i] ? 'selected' : ''}" onclick="saveAnswer('${keys[i]}')"><b>${keys[i]}.</b> ${opt}</button>` : '').join('')}
+        </div>
+    `;
+    const total = activeQuiz.questions.length;
+    document.getElementById('prev-btn').style.visibility = currentIdx === 0 ? 'hidden' : 'visible';
+    document.getElementById('next-btn').style.display = currentIdx === total - 1 ? 'none' : 'block';
+    document.getElementById('submit-btn').style.display = currentIdx === total - 1 ? 'block' : 'none';
+}
+
+function saveAnswer(key) { userAnswers[currentIdx] = key; renderQuestion(); }
+function moveQuestion(step) { currentIdx += step; renderQuestion(); }
+
+function startTimer(sec) {
+    timer = setInterval(() => {
+        sec--;
+        const m = String(Math.floor(sec/60)).padStart(2,'0');
+        const s = String(sec%60).padStart(2,'0');
+        document.getElementById('timer-display').innerText = `${m}:${s}`;
+        if (sec <= 0) handleQuizSubmission();
+    }, 1000);
+}
+
+async function handleQuizSubmission() {
+    clearInterval(timer);
+    let correct = 0;
+    activeQuiz.questions.forEach((q, i) => { if (userAnswers[i] === q.correct) correct++; });
+    await AcademicAPI.submitQuiz(activeQuiz.id, correct, activeQuiz.questions.length);
+    document.getElementById('quiz-player-view').style.display = 'none';
+    document.getElementById('quiz-result-view').style.display = 'block';
+    const pct = Math.round((correct/activeQuiz.questions.length)*100);
+    document.getElementById('res-pct').innerText = pct + '%';
+    document.getElementById('res-title').innerText = pct >= 50 ? "Passed!" : "Try Again!";
+    document.getElementById('res-desc').innerText = `You scored ${correct} out of ${activeQuiz.questions.length}.`;
+}
+</script>
+</body>
+</html>

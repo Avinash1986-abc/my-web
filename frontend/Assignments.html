@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Assignments — RuralLearning Teacher</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<script src="main.js"></script>
+<style>
+:root{--green:#16a34a;--green-lt:#dcfce7;--green-dk:#14532d;--ink:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f9fafb;--white:#fff;--red:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;opacity:0;transition:opacity .3s;}
+.wrap{display:flex;min-height:100vh;}
+
+/* SIDEBAR */
+.side{width:245px;background:var(--white);border-right:1px solid var(--border);padding:1.8rem 1.2rem;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;}
+.logo{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);text-decoration:none;margin-bottom:2.5rem;display:block;}
+.logo b{color:var(--green);}
+.nav{list-style:none;flex-grow:1;}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--muted);font-size:.875rem;font-weight:500;transition:.2s;}
+.nav a:hover,.nav a.on{background:var(--green-lt);color:var(--green-dk);font-weight:600;}
+.prof{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;}
+.av{width:34px;height:34px;background:var(--green);color:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+/* MAIN */
+.main{flex:1;padding:2.5rem 2.8rem;max-width:1000px;}
+.page-head{margin-bottom:2rem;}
+.page-head h1{font-family:'DM Serif Display',serif;font-size:2rem;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2.5rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);}
+.card-title{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.fg{margin-bottom:1.1rem;}
+.fg.full{grid-column:1/-1;}
+label{display:block;font-size:.75rem;font-weight:700;margin-bottom:6px;text-transform:uppercase;color:var(--muted);}
+input,select,textarea{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#fcfcfc;font-family:inherit;}
+.btn-pub{width:100%;padding:14px;background:#5cb885;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:1rem;margin-top:10px;}
+.btn-pub:hover{background:#4ca374;}
+.table-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:1.5rem;overflow:hidden;}
+table{width:100%;border-collapse:collapse;text-align:left;}
+th{font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);padding:15px;border-bottom:1px solid var(--border);}
+td{padding:15px;font-size:.85rem;border-bottom:1px solid #f3f4f6;}
+.t-title{font-weight:700;}
+.t-del{color:var(--red);font-weight:600;background:none;border:none;cursor:pointer;}
+.t-tag{background:var(--green-lt);color:var(--green-dk);padding:3px 10px;border-radius:6px;font-size:.7rem;font-weight:700;}
+.due-soon{color:#f59e0b;font-weight:700;}
+.due-over{color:var(--red);font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <a href="Dashboard-teacher.html" class="logo">Rural<b>Learning</b></a>
+    <ul class="nav">
+             <a href="Dashboard-teacher.html" class="nav-link active">📊  Dashboard</a>
+            <a href="Upload-video.html" class="nav-link">🎥 Video Lectures</a>
+            <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
+            <a href="Quiz.html" class="nav-link">⏱️ Quiz Creator</a>
+            <a href="Upload-materials.html" class="nav-link">📄 Study Notes</a>
+    
+          <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+            <a href="student-profile.html" class="nav-link">👤 My Profile</a>
+          </ul>
+    <div class="prof">
+      <div class="av" id="u-av">T</div>
+      <div>
+        <div id="u-name" style="font-weight:700;font-size:.8rem;">Teacher</div>
+        <div style="font-size:.65rem;color:var(--muted);">Faculty Member</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-head"><h1>Assignments</h1></div>
+
+    <!-- CREATE -->
+    <div class="card">
+      <div class="card-title">📋 Assign New Homework</div>
+      <div class="form-grid">
+        <div class="fg"><label>Assignment Title</label><input id="aTitle" type="text" placeholder="e.g. Unit 1 Worksheet"></div>
+        <div class="fg"><label>Subject</label><input id="aSubject" type="text" placeholder="e.g. Mathematics"></div>
+        <div class="fg"><label>Target Class</label><input id="aClass" type="text" placeholder="e.g. Class 10"></div>
+        <div class="fg"><label>Due Date</label><input id="aDate" type="date"></div>
+        <div class="fg full"><label>Instructions / Description</label><textarea id="aDesc" rows="3" placeholder="Enter tasks for students..."></textarea></div>
+      </div>
+      <button class="btn-pub" id="createBtn">🚀 POST ASSIGNMENT</button>
+    </div>
+
+    <!-- LIST -->
+    <h3 style="margin-bottom:15px;">Your Posted Assignments</h3>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr><th>Title</th><th>Subject</th><th>Class</th><th>Due Date</th><th>Action</th></tr>
+        </thead>
+        <tbody id="aTableBody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const user = getUser();
+    // ✅ Auth + Role Guard
+    if (!user) { window.location.replace('login.html'); return; }
+    if (user.role !== 'teacher') { window.location.replace('assignments-student.html'); return; }
+
+    document.getElementById('u-name').innerText = user.name;
+    document.getElementById('u-av').innerText   = user.name.charAt(0).toUpperCase();
+
+    loadAssignments();
+    document.getElementById('createBtn').onclick = handleCreate;
+    document.body.style.opacity = '1';
+});
+
+async function loadAssignments() {
+    const body = document.getElementById('aTableBody');
+    try {
+        const res = await ContentAPI.getAssignments();
+        if (!res || res.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:40px;color:#999;">No assignments posted yet.</td></tr>';
+            return;
+        }
+        body.innerHTML = res.map(a => {
+            const due     = new Date(a.dueDate);
+            const today   = new Date();
+            const diffDay = Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+            const dueCls  = diffDay < 0 ? 'due-over' : diffDay <= 2 ? 'due-soon' : '';
+            const dueLabel = diffDay < 0 ? '⚠️ Overdue' : diffDay === 0 ? '⚠️ Today' : due.toLocaleDateString();
+            return `
+                <tr>
+                    <td class="t-title">${a.title}</td>
+                    <td><span class="t-tag">${a.subject}</span></td>
+                    <td>${a.targetClass || '—'}</td>
+                    <td class="${dueCls}">${dueLabel}</td>
+                    <td><button class="t-del" onclick="deleteAssignment(${a.id})">🗑 Delete</button></td>
+                </tr>`;
+        }).join('');
+    } catch(e) { console.error("Load failed", e); }
+}
+
+async function handleCreate() {
+    const title   = document.getElementById('aTitle').value.trim();
+    const dueDate = document.getElementById('aDate').value;
+    if (!title || !dueDate) return alert("Please fill in the title and due date.");
+
+    const btn = document.getElementById('createBtn');
+    btn.disabled = true; btn.innerText = "⏳ Posting...";
+    try {
+        const res = await ContentAPI.createAssignment({
+            title,
+            subject:     document.getElementById('aSubject').value,
+            targetClass: document.getElementById('aClass').value,
+            dueDate,
+            description: document.getElementById('aDesc').value
+        });
+        if (res.success) { alert("✅ Assignment Published!"); window.location.reload(); }
+        else alert("Failed: " + res.message);
+    } catch(e) { alert("Server Error."); }
+    finally { btn.disabled = false; btn.innerText = "🚀 POST ASSIGNMENT"; }
+}
+
+async function deleteAssignment(id) {
+    if (!confirm("Delete this assignment?")) return;
+    try {
+        const res = await ContentAPI.deleteAssignment(id);
+        if (res.success) loadAssignments();
+    } catch(e) { alert("Error deleting."); }
+}
+</script>
+</body>
+</html>

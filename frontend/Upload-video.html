@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Video Studio — RuralLearning</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<script src="main.js"></script>
+<style>
+/* ── RESET & BASE ── */
+:root{--green:#16a34a;--green-lt:#dcfce7;--green-dk:#14532d;--ink:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f9fafb;--white:#fff;--red:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;opacity:0;transition:opacity .3s;}
+
+.wrap{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* ── SIDEBAR ── */
+.side{width:245px;background:var(--white);border-right:1px solid var(--border);padding:1.8rem 1.2rem;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;}
+.logo{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);text-decoration:none;margin-bottom:2.5rem;display:block;}
+.logo b{color:var(--green);}
+.nav{list-style:none;}
+.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--muted);font-size:.875rem;font-weight:500;transition:.2s;}
+.nav a:hover,.nav a.on{background:var(--green-lt);color:var(--green-dk);font-weight:600;}
+.prof{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;}
+.av{width:34px;height:34px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;padding:2.5rem 2.8rem;max-width:1000px;}
+.page-head{margin-bottom:2rem;}
+.page-head h1{font-family:'DM Serif Display',serif;font-size:2rem;}
+
+/* ── UPLOAD BOX ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2.5rem;box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);}
+.card-title{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;}
+.upload-grid{display:grid;grid-template-columns: 1.2fr 1fr; gap: 30px;}
+
+.fg{margin-bottom:1.1rem;}
+label{display:block;font-size:.75rem;font-weight:700;margin-bottom:6px;text-transform:uppercase;color:var(--ink);}
+input, select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#fcfcfc;}
+
+/* ── DROPZONE & BUTTON ── */
+.drop-mini{border:2px dashed var(--border);border-radius:15px;padding:20px;text-align:center;background:#fff;margin-bottom:15px;cursor:pointer;}
+.btn-pub{width:100%;padding:14px;background:#5cb885;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+
+/* ── TABLE STYLING (The fix) ── */
+.table-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:1.5rem;overflow:hidden;}
+table{width:100%;border-collapse:collapse;text-align:left;}
+th{font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);padding:15px;border-bottom:1px solid var(--border);}
+td{padding:15px;font-size:.85rem;border-bottom:1px solid #f3f4f6;cursor:pointer;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f9fafb;}
+.t-title{font-weight:700;color:var(--ink);}
+.t-del{color:var(--red);font-weight:600;background:none;border:none;cursor:pointer;}
+.t-tag{background:var(--green-lt);color:var(--green-dk);padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:700;}
+
+/* Progress Bar */
+.prog-box{display:none;margin-top:10px;}
+.prog-bar{height:6px;background:var(--border);border-radius:10px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--green);width:0%;transition:0.3s;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+    <aside class="side">
+        <a href="#" class="logo">Rural<b>Learning</b></a>
+        <ul class="nav">
+            <a href="Dashboard-teacher.html" class="nav-link active">📊  Dashboard</a>
+            <a href="Upload-video.html" class="nav-link">🎥 Video Lectures</a>
+            <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
+            <a href="Quiz.html" class="nav-link">⏱️ Quiz Creator</a>
+            <a href="Upload-materials.html" class="nav-link">📄 Study Notes</a>
+        
+      <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+           <a href="student-profile.html" class="nav-link">👤 My Profile</a>      
+        </ul>
+
+        <div class="prof">
+            <div class="av" id="av">A</div>
+            <div>
+                <div id="uname" style="font-weight:700;font-size:.8rem;">Akash Zirli</div>
+                <div style="font-size:.65rem;color:var(--muted);">Faculty Member</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="page-head"><h1>Video Studio</h1></div>
+
+        <!-- UPLOAD SECTION -->
+        <div class="card">
+            <div class="card-title">Upload 1GB Lecture</div>
+            <div class="upload-grid">
+                <div>
+                    <div class="fg"><label>Video Title</label><input id="vTitle" type="text" placeholder="e.g. Chapter 1: Introduction"></div>
+                    <div class="fg"><label>Subject</label><input id="vSubject" type="text" placeholder="e.g. Science"></div>
+                    <div class="fg"><label>Target Class</label><input id="vClass" type="text" placeholder="e.g. Class 10"></div>
+                </div>
+                <div>
+                    <div class="drop-mini" onclick="document.getElementById('fi').click()">
+                        <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px;">Select MP4 Video (Max 1GB)</div>
+                        <input type="file" id="fi" accept="video/*" hidden>
+                        <span id="fname" style="font-size:.75rem;font-weight:600;">No file chosen</span>
+                    </div>
+                    <button class="btn-pub" id="pubBtn">🚀 PUBLISH VIDEO</button>
+                    
+                    <div class="prog-box" id="progBox">
+                        <div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:5px;">
+                            <span>Uploading...</span><span id="progPct">0%</span>
+                        </div>
+                        <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLE SECTION -->
+        <h3 style="margin-bottom:15px;">Your Uploaded Lessons</h3>
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Subject</th>
+                        <th>Class</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="vTableBody">
+                    <!-- Rows injected here -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script>
+const KEY = 'rl_vids_v3';
+const getVids = () => JSON.parse(localStorage.getItem(KEY) || '[]');
+const setVids = a => localStorage.setItem(KEY, JSON.stringify(a));
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('pubBtn').onclick = doUpload;
+    document.getElementById('fi').onchange = e => {
+        if(e.target.files[0]) document.getElementById('fname').innerText = e.target.files[0].name;
+    };
+    loadFromServer();
+    document.body.style.opacity = '1';
+});
+
+async function loadFromServer() {
+    try {
+        const res = await ContentAPI.getVideos();
+        if (res && Array.isArray(res)) {
+            // Keep server videos as the primary data
+            const server = res.map(v => ({
+                id: 'srv_' + v.id, title: v.title, subject: v.subject || 'General',
+                cls: v.targetClass || '', date: new Date(v.created_at).toLocaleDateString(),
+                videoUrl: v.videoUrl, source: 'server'
+            }));
+            setVids(server);
+        }
+    } catch(e) { console.warn("Server sync failed"); }
+    render();
+}
+
+async function doUpload() {
+    const file = document.getElementById('fi').files[0];
+    if (!file) return alert("Select a file");
+
+    const btn = document.getElementById('pubBtn');
+    const pb = document.getElementById('progBox');
+    btn.disabled = true; pb.style.display = 'block';
+
+    try {
+        await xhrUpload(file, pct => {
+            document.getElementById('progFill').style.width = pct + '%';
+            document.getElementById('progPct').innerText = pct + '%';
+        });
+
+        // After successful upload, refresh the table from server
+        await loadFromServer();
+        alert("Published successfully!");
+        
+        // Reset Form
+        pb.style.display = 'none';
+        btn.disabled = false;
+        document.getElementById('fi').value = '';
+        document.getElementById('fname').innerText = 'No file chosen';
+    } catch(err) {
+        alert("Upload failed");
+        btn.disabled = false;
+    }
+}
+
+function xhrUpload(file, onProg) {
+    return new Promise((res, rej) => {
+        const fd = new FormData();
+        fd.append('video', file);
+        fd.append('title', document.getElementById('vTitle').value || file.name);
+        fd.append('subject', document.getElementById('vSubject').value);
+        fd.append('targetClass', document.getElementById('vClass').value);
+        
+        const xhr = new XMLHttpRequest();
+        xhr.upload.onprogress = e => onProg(Math.round(e.loaded/e.total*100));
+        xhr.onload = () => (xhr.status<300) ? res() : rej();
+        xhr.open('POST', 'http://localhost:5000/api/videos/upload');
+        const t = localStorage.getItem('rlt_token');
+        if (t) xhr.setRequestHeader('Authorization', 'Bearer ' + t);
+        xhr.send(fd);
+    });
+}
+
+async function delVid(id, e) {
+    e.stopPropagation();
+    if(!confirm("Delete this lesson?")) return;
+    if(id.startsWith('srv_')) await ContentAPI.deleteVideo(id.replace('srv_', ''));
+    setVids(getVids().filter(v => v.id !== id));
+    render();
+}
+
+function render() {
+    const vids = getVids();
+    const body = document.getElementById('vTableBody');
+    if(!vids.length) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:40px;">No lessons uploaded yet.</td></tr>';
+        return;
+    }
+
+    body.innerHTML = vids.reverse().map(v => `
+        <tr onclick="window.location.href='watch.html?url=${encodeURIComponent(v.videoUrl)}&title=${encodeURIComponent(v.title)}'">
+            <td class="t-title">${v.title}</td>
+            <td><span class="t-tag">${v.subject}</span></td>
+            <td>${v.cls || '—'}</td>
+            <td>${v.date || '—'}</td>
+            <td><button class="t-del" onclick="delVid('${v.id}', event)">Delete</button></td>
+        </tr>
+    `).join('');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Progress — Rural Learning Portal</title>
+  <!-- Modern Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Link Master Scripts (Bridge to Backend) -->
+  <script src="api.js"></script>
+  <script src="main.js"></script>
+
+  <style>
+    :root {
+      /* --- SENIOR WHITE THEME PALETTE --- */
+      --bg-page: #ffffff;
+      --bg-side: #f8fafc;
+      --primary: #52b788;       /* Emerald Green */
+      --text-dark: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-dark);
+      min-height: 100vh;
+      opacity: 0; /* Security Guard: Hidden until JS verifies session */
+      transition: opacity 0.4s ease;
+    }
+
+    .layout-wrapper { display: flex; min-height: 100vh; }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+      width: 260px;
+      background-color: var(--bg-side);
+      border-right: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo { 
+      font-size: 1.4rem; font-weight: 800; color: var(--text-dark); 
+      text-decoration: none; margin-bottom: 2.5rem; display: block;
+    }
+    .logo span { color: var(--primary); }
+
+    .nav-menu { list-style: none; flex: 1; }
+    .nav-menu li { margin-bottom: 5px; }
+    .nav-menu a {
+      text-decoration: none; color: var(--text-muted);
+      padding: 12px 16px; display: flex; align-items: center;
+      gap: 12px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+    }
+    .nav-menu a:hover, .nav-menu a.active {
+      background: white; color: var(--primary); box-shadow: var(--shadow);
+    }
+
+    /* --- MAIN CONTENT AREA --- */
+    .main-content { flex: 1; padding: 3rem 4rem; overflow-y: auto; }
+
+    .header-area { margin-bottom: 3rem; }
+    .header-area h1 { font-size: 2rem; font-weight: 800; margin-bottom: 5px; }
+    .header-area p { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* KPI STATS GRID */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 3rem; }
+    .stat-card {
+      background: white; border: 1px solid var(--border);
+      padding: 1.5rem; border-radius: 20px; text-align: center; box-shadow: var(--shadow);
+    }
+    .stat-val { font-size: 1.8rem; font-weight: 800; display: block; color: var(--primary); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+
+    /* SUBJECT PROGRESS CARDS */
+    .subject-section {
+      background: white; border: 1px solid var(--border); border-radius: 24px;
+      padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow);
+    }
+    .subject-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+    .subject-header h2 { font-size: 1.2rem; font-weight: 700; }
+
+    .progress-item { margin-bottom: 1.5rem; }
+    .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 8px; font-weight: 700; color: var(--text-muted); }
+    
+    .progress-track { background: #f1f5f9; height: 10px; border-radius: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: 1.5s ease-in-out; width: 0%; }
+
+    /* PERFORMANCE HISTORY TABLE */
+    .history-box { margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+    .history-box h3 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem; font-weight: 800; }
+    
+    .history-table { width: 100%; border-collapse: collapse; }
+    .history-table th { text-align: left; font-size: 0.7rem; color: var(--text-muted); padding-bottom: 12px; text-transform: uppercase;}
+    .history-table td { padding: 12px 0; font-size: 0.85rem; border-bottom: 1px solid #f8fafc; }
+
+    .badge {
+      background: #f0fdf4; color: var(--primary);
+      padding: 4px 12px; border-radius: 50px; font-weight: 800; font-size: 0.75rem;
+    }
+
+    /* FOOTER PROFILE */
+    .profile-footer {
+      margin-top: auto; padding: 12px; background: white; border: 1px solid var(--border);
+      border-radius: 16px; display: flex; align-items: center; gap: 12px;
+    }
+    .avatar-box { width: 35px; height: 35px; border-radius: 8px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+
+    .empty-state { text-align: center; padding: 60px; color: var(--text-muted); border: 2px dashed var(--border); border-radius: 20px; }
+  </style>
+</head>
+<body>
+
+<div class="layout-wrapper">
+  <!-- Sidebar POINTING TO YOUR CORRECT FILENAMES -->
+  <aside class="sidebar">
+    <a href="Dashboard-student.html" class="logo">Rural<span>Learning</span></a>
+    <ul class="nav-menu">
+      <li><a href="Dashboard-student.html">🏠 Dashboard</a></li>
+      <li><a href="Tutorials.html">📹 Video Lessons</a></li>
+      <li><a href="Assignments.html">✏️ Assignments</a></li>
+      <li><a href="Quiz.html">⏱️ Quizzes</a></li>
+      <li><a href="Materials.html">📄 Study Library</a></li>
+      <li><a href="Scoreboard.html" class="active">🏆 Board</a></li>
+    <div class="profile-footer">
+    </ul>
+ 
+   
+      <div class="avatar-box" id="user-init">?</div>
+      <div>
+        <div id="user-name" style="font-weight:700; font-size:0.8rem;">Loading...</div>
+        <div id="user-class" style="font-size:0.65rem; color:var(--text-muted);">fetching profile</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="header-area">
+      <h1>Performance Report</h1>
+      <p>A data-driven summary of your learning journey and growth.</p>
+    </div>
+
+    <!-- Quick KPIs (Automated for MySQL) -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-val" id="kpi-syllabus">0%</span>
+        <span class="stat-label">Syllabus Covered</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val" id="kpi-score">0.0</span>
+        <span class="stat-label">Avg Quiz Score</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val" id="kpi-grade">N/A</span>
+        <span class="stat-label">Target Grade</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-val" id="kpi-rank">#--</span>
+        <span class="stat-label">Portal Rank</span>
+      </div>
+    </div>
+
+    <div id="progress-render-zone">
+        <!-- DATA FROM MYSQL WILL BE INJECTED HERE -->
+        <div class="empty-state">Talking to Database... Please wait.</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+    /**
+     * PROGRESS ENGINE - SENIOR DEVELOPER VERSION
+     */
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 1. Auth Guard (Safety check handled via api.js/main.js)
+        const user = getUser(); 
+        if (!user || user.role !== 'student') {
+            window.location.replace('login.html');
+            return;
+        }
+
+        // 2. Personalize Sidebar & Page
+        document.getElementById('user-name').innerText = user.name;
+        document.getElementById('user-class').innerText = user.studentClass.toUpperCase();
+        document.getElementById('user-init').innerText = user.name.charAt(0).toUpperCase();
+
+        // 3. Trigger Data Load from MySQL
+        loadAcademicProgress(user.id);
+
+        // Final Reveal
+        document.body.style.opacity = '1';
+    });
+
+    async function loadAcademicProgress(userId) {
+        const wrapper = document.getElementById('progress-render-zone');
+
+        /**
+         * CONNECTION TO NODE.JS/MYSQL:
+         * const response = await AcademicAPI.getMyProgress();
+         * const data = response.data;
+         */
+        const data = {
+            overview: { syllabus: "0%", avgScore: "0.0", grade: "N/A", rank: "#--" },
+            subjects: [] // This array will be populated by your Database results
+        };
+
+        // Update top KPI cards
+        document.getElementById('kpi-syllabus').innerText = data.overview.syllabus;
+        document.getElementById('kpi-score').innerText = data.overview.avgScore;
+        document.getElementById('kpi-grade').innerText = data.overview.grade;
+        document.getElementById('kpi-rank').innerText = data.overview.rank;
+
+        if (data.subjects.length === 0) {
+            wrapper.innerHTML = `
+                <div class="empty-state">
+                    <h3>No study records found yet.</h3>
+                    <p style="font-size: 0.8rem; margin-top:5px;">Complete a video lesson or a quiz to see your progress charts.</p>
+                </div>`;
+            return;
+        }
+
+        // DYNAMIC MAPPING: Build Subject Cards and History Tables
+        wrapper.innerHTML = data.subjects.map(s => `
+            <div class="subject-section anim-card">
+                <div class="subject-header">
+                    <span style="font-size: 1.4rem;">${s.icon || '📚'}</span>
+                    <h2>${s.title}</h2>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-info"><span>COURSE COVERAGE</span><span>${s.videoPercent}%</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width: ${s.videoPercent}%"></div></div>
+                </div>
+
+                <div class="progress-item">
+                    <div class="progress-info"><span>ASSESSMENT AVERAGE</span><span>${s.quizAvg} / 10</span></div>
+                    <div class="progress-track"><div class="progress-fill" style="width: ${s.quizAvg * 10}%"></div></div>
+                </div>
+
+                <div class="history-box">
+                    <h3>RECENT QUIZ HISTORY</h3>
+                    <table class="history-table">
+                        <thead><tr><th>TOPIC</th><th>DATE</th><th>SCORE</th></tr></thead>
+                        <tbody>
+                            ${s.recentQuizzes.map(q => `
+                                <tr>
+                                    <td>${q.topic}</td>
+                                    <td>${q.date}</td>
+                                    <td><span class="badge">${q.score} / 10</span></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `).join('');
+    }
+</script>
+
+</body>
+</html>

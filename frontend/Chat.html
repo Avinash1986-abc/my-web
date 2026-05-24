@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Chat — Rural Learning Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <script src="main.js"></script>
+
+    <style>
+        :root {
+            --bg-page: #ffffff;
+            --bg-sidebar: #f9fbfe;
+            --primary: #52b788;       
+            --primary-soft: #eefdf5;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        body { 
+            opacity: 0; 
+            transition: opacity 0.4s ease;
+            background: var(--bg-page);
+            color: var(--text-dark);
+            font-family: 'Outfit', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        nav {
+            height: 70px; background: white;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 5%; border-bottom: 1px solid var(--border);
+            position: relative; z-index: 100;
+        }
+        .logo { font-family: 'Playfair Display'; font-size: 1.4rem; color: var(--text-dark); text-decoration: none; font-weight: 900; }
+        .logo span { color: var(--primary); }
+
+        .chat-layout {
+            display: grid; grid-template-columns: 350px 1fr;
+            height: calc(100vh - 70px);
+        }
+
+        .chat-sidebar {
+            background: var(--bg-sidebar); border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+        }
+        .sidebar-header { padding: 25px 25px 10px; }
+        
+        .tab-switcher {
+            display: flex; gap: 10px; padding: 15px 25px; border-bottom: 1px solid var(--border);
+        }
+        .tab-btn {
+            flex: 1; padding: 10px; border: none; background: transparent;
+            font-family: inherit; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; border-radius: 8px; transition: 0.3s; font-size: 0.85rem;
+        }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: var(--shadow); }
+
+        .contact-list { flex: 1; overflow-y: auto; padding: 15px; }
+        .contact-card {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            border-radius: 12px; cursor: pointer; transition: 0.2s; margin-bottom: 5px;
+        }
+        .contact-card:hover { background: white; box-shadow: var(--shadow); }
+        .contact-card.active { background: var(--primary-soft); border-left: 4px solid var(--primary); }
+
+        .avatar {
+            width: 45px; height: 45px; border-radius: 12px;
+            background: #e2e8f0; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; position: relative;
+        }
+        .online-dot {
+            position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px;
+            background: #22c55e; border-radius: 50%; border: 2px solid white;
+        }
+
+        .chat-view { display: flex; flex-direction: column; background: white; }
+        .chat-view-header {
+            padding: 15px 30px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .messages-container {
+            flex: 1; overflow-y: auto; padding: 30px;
+            display: flex; flex-direction: column; gap: 15px;
+            background: #fdfdfd;
+        }
+
+        .msg-bubble { max-width: 65%; padding: 12px 18px; border-radius: 15px; font-size: 0.9rem; line-height: 1.5; }
+        .msg-sent { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .msg-received { align-self: flex-start; background: white; border: 1px solid var(--border); border-bottom-left-radius: 2px; box-shadow: var(--shadow); }
+
+        .chat-input-area {
+            padding: 20px 30px; border-top: 1px solid var(--border);
+            display: flex; gap: 15px; align-items: center; background: white;
+        }
+        .input-box {
+            flex: 1; padding: 14px 20px; border: 1.5px solid var(--border);
+            border-radius: 12px; outline: none; transition: 0.3s; font-family: inherit;
+        }
+        .input-box:focus { border-color: var(--primary); background: var(--primary-soft); }
+
+        .send-btn {
+            background: var(--primary); color: white; border: none;
+            width: 45px; height: 45px; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+
+        .empty-chat {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; color: var(--text-muted); text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="logo">Rural<span>Learning</span></a>
+    <div style="display: flex; gap: 20px; align-items: center;">
+        <a href="Dashboard-student.html" id="back-dash" style="color: var(--text-muted); text-decoration: none; font-size: 0.8rem; font-weight: 700;">DASHBOARD</a>
+        <div id="user-initial" style="width: 35px; height: 35px; background: var(--primary-soft); color: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800;">?</div>
+    </div>
+</nav>
+
+<div class="chat-layout">
+    <aside class="chat-sidebar">
+        <div class="sidebar-header">
+            <h2 style="font-family: 'Playfair Display';">Discussions</h2>
+        </div>
+
+        <div class="tab-switcher">
+            <button class="tab-btn active" id="btn-peers" onclick="loadContacts('peers')">My Peers</button>
+            <button class="tab-btn" id="btn-mentors" onclick="loadContacts('teachers')">Mentors</button>
+        </div>
+
+        <div class="contact-list" id="contact-list-ui">
+            <!-- Data from MySQL will appear here -->
+        </div>
+    </aside>
+
+    <main class="chat-view" id="chat-window">
+        <div class="empty-chat" id="empty-state">
+            <div style="font-size: 3rem; margin-bottom: 10px;">💬</div>
+            <h3>Classroom Chat</h3>
+            <p>Select a student or teacher to start messaging.</p>
+        </div>
+
+        <div id="active-chat-ui" style="display: none; height: 100%; flex-direction: column;">
+            <header class="chat-view-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="avatar" id="header-avatar" style="width: 35px; height: 35px; font-size: 1rem;">?</div>
+                    <div>
+                        <h4 id="header-name" style="font-size: 1rem; margin: 0;">Name</h4>
+                        <span id="header-status" style="font-size: 0.7rem; color: var(--primary);">Online</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="messages-container" id="message-flow">
+                <!-- Messages dynamic from Database -->
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="msg-input" class="input-box" placeholder="Type a message..." onkeydown="if(event.key==='Enter') performSend()">
+                <button class="send-btn" onclick="performSend()">🚀</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    /**
+     * CHAT ENGINE
+     * Master Security managed by main.js
+     */
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!user) {
+            window.location.replace('login.html');
+            return;
+        }
+
+        // Adjust "Back to Dashboard" link based on role
+        const dashLink = document.getElementById('back-dash');
+        dashLink.href = user.role === 'teacher' ? 'Dashboard-teacher.html' : 'Dashboard-student.html';
+        
+        document.getElementById('user-initial').innerText = user.name.charAt(0).toUpperCase();
+        document.body.style.opacity = '1';
+        
+        // Initial fetch for the peer list
+        loadContacts('peers');
+    });
+
+    async function loadContacts(type) {
+        const container = document.getElementById('contact-list-ui');
+        container.innerHTML = `<div style="text-align:center; padding-top:20px; color:var(--text-muted); font-size:0.8rem;">Loading contacts...</div>`;
+
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        if(type === 'peers') document.getElementById('btn-peers').classList.add('active');
+        else document.getElementById('btn-mentors').classList.add('active');
+
+        /**
+         * BACKEND FETCH:
+         * const response = await fetch(`/api/chat/contacts?type=${type}`);
+         * const data = await response.json();
+         */
+        const data = []; // This will hold your MySQL results
+
+        if(data.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding-top:40px; color:var(--text-muted); font-size:0.8rem;">No ${type} available online.</div>`;
+            return;
+        }
+
+        container.innerHTML = data.map(person => `
+            <div class="contact-card" onclick="openChat({id: '${person.id}', name: '${person.name}', icon: '${person.icon}', role: '${person.role}'})">
+                <div class="avatar">${person.icon || '👤'} <div class="online-dot"></div></div>
+                <div>
+                    <h4 style="font-size: 0.9rem; margin:0;">${person.name}</h4>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin:0;">${person.role}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openChat(target) {
+        document.getElementById('empty-state').style.display = 'none';
+        document.getElementById('active-chat-ui').style.display = 'flex';
+        
+        document.getElementById('header-name').innerText = target.name;
+        document.getElementById('header-avatar').innerText = target.icon || '👤';
+        
+        const flow = document.getElementById('message-flow');
+        flow.innerHTML = `<div style="text-align:center; font-size:0.7rem; color:var(--text-muted); margin-bottom:20px;">Beginning of your secure chat with ${target.name}</div>`;
+        
+        /**
+         * BACKEND FETCH:
+         * const res = await fetch(`/api/chat/history?target=${target.id}`);
+         * const messages = await res.json();
+         * ... render existing messages ...
+         */
+    }
+
+    function performSend() {
+        const input = document.getElementById('msg-input');
+        const flow = document.getElementById('message-flow');
+        
+        if (input.value.trim() === "") return;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble msg-sent';
+        bubble.innerText = input.value;
+        
+        flow.appendChild(bubble);
+        
+        /**
+         * BACKEND POST:
+         * fetch('/api/chat/send', { method: 'POST', body: JSON.stringify({text: input.value, to: targetId}) });
+         */
+        
+        input.value = "";
+        flow.scrollTop = flow.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

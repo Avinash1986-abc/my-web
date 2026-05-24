@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — Rural Learning Portal</title>
+<!-- Master UI Logic -->
+<script src="api.js"></script>
+<script src="main.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--green-dark:#1a3c2e;--green-mid:#2d6a4f;--green-light:#52b788;--gold:#f4a261;--cream:#fefae0;--white:#ffffff;--error:#ef4444;}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif; min-height:100vh; background:var(--green-dark); display:flex; align-items:center; justify-content:center; overflow:hidden;}
+  
+  .bg-animation{position:fixed;inset:0;z-index:0;background:linear-gradient(135deg,#0d2818 0%,#1a3c2e 40%,#2d6a4f 100%);}
+  .circle{position:absolute;border-radius:50%;opacity:.07;animation:floatUp 15s linear infinite;}
+  @keyframes floatUp{0%{transform:translateY(110vh) scale(.8);opacity:0;}10%{opacity:.07;}100%{transform:translateY(-20vh) scale(1.1);opacity:0;}}
+
+  .container{position:relative;z-index:10; display:flex; width:min(1000px,96vw); height:min(720px,96vh); border-radius:28px; overflow:hidden; box-shadow:0 40px 120px rgba(0,0,0,.6); background: var(--cream);}
+  .left-panel{flex:1; background:linear-gradient(160deg,#1a3c2e 0%,#2d6a4f 100%); display:flex;flex-direction:column;align-items:center;justify-content:center; padding:40px; text-align: center;}
+  .brand-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--white); line-height: 1.2;}
+  .brand-name span{color:var(--gold);}
+
+  .right-panel{ width:500px; background:var(--cream); padding:30px 40px; display:flex; flex-direction:column; justify-content:center; overflow-y: auto;}
+  .role-toggle{display:flex;background:#e8f5e9;border-radius:50px;padding:4px;margin-bottom:15px;position:relative;}
+  .role-toggle input{display:none;}
+  .role-toggle label{flex:1;text-align:center;padding:8px 0;border-radius:50px;cursor:pointer;font-size:13px;font-weight:700;color:var(--green-mid);z-index:1;}
+  .toggle-slider{position:absolute;top:4px;left:4px;width:calc(50% - 4px);height:calc(100% - 8px);background:var(--green-mid);border-radius:50px;transition:0.3s cubic-bezier(.34,1.56,.64,1);}
+  #r-teacher:checked ~ .toggle-slider{transform:translateX(100%);}
+  input:checked + label {color: white !important;}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .form-group{margin-bottom:12px;}
+  .form-group label{display:block;font-size:11px;font-weight:700;color:var(--green-dark);margin-bottom:5px;text-transform:uppercase;}
+  .input-wrap input, .input-wrap select{width:100%;padding:10px 12px;border:2px solid #d4e8d4;border-radius:10px;font-size:13px;outline:none; transition: 0.3s;}
+  .input-wrap input:focus, .input-wrap select:focus{border-color: var(--green-mid); background: white;}
+  
+  /* ── PASS HINTS STYLE ── */
+  .pass-hints{ background: #ffffff; border: 1px solid #d4e8d4; border-radius: 12px; padding: 12px; margin-bottom: 15px; display: none; }
+  .hint-item{ font-size: 10px; font-weight: 700; margin-bottom: 3px; color: var(--error); display: flex; align-items: center; gap: 5px; }
+  .hint-item.valid { color: var(--green-mid); }
+
+  .btn-register{width:100%;padding:14px; background:linear-gradient(135deg,var(--green-mid),var(--green-light)); border:none;border-radius:10px; color:white; font-size:15px;font-weight:700; cursor:pointer; margin-top: 10px; transition: 0.3s;}
+  .btn-register:hover{transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);}
+
+  .extra-fields{display:none;}
+  .show{display:block;}
+</style>
+</head>
+<body>
+<div class="bg-animation"><div class="circle" style="left:10%"></div><div class="circle" style="left:70%"></div></div>
+<div class="container">
+  <div class="left-panel">
+    <div style="font-size: 50px; margin-bottom: 20px;">📚</div>
+    <div class="brand-name">Rural Learning<br><span>Tutorial</span></div>
+    <p style="color: #b7e4c7; margin-top:10px; font-size: 13px;">Bridging education gaps everywhere 🌱</p>
+  </div>
+  <div class="right-panel">
+    <h2 style="font-family:'Playfair Display'; color:var(--green-dark); margin-bottom: 5px;">Create Account 👋</h2>
+    <p style="font-size:12px; color:#666; margin-bottom: 15px;">Join our community today</p>
+    
+    <div class="role-toggle">
+      <input type="radio" name="role" id="r-student" checked><label for="r-student">🎓 Student</label>
+      <input type="radio" name="role" id="r-teacher"><label for="r-teacher">👩‍🏫 Teacher</label>
+      <div class="toggle-slider"></div>
+    </div>
+
+    <form onsubmit="handleRegister(event)">
+      <div class="grid-2">
+        <div class="form-group"><label>First Name</label><div class="input-wrap"><input type="text" id="fname" placeholder="First Name" required></div></div>
+        <div class="form-group"><label>Last Name</label><div class="input-wrap"><input type="text" id="lname" placeholder="Last Name" required></div></div>
+      </div>
+      <div class="form-group"><label>Email Address</label><div class="input-wrap"><input type="email" id="email" placeholder="e.g. user@gmail.com" required></div></div>
+      <div class="form-group"><label>Mobile Number</label><div class="input-wrap"><input type="tel" id="mobile" placeholder="Mobile Number" required></div></div>
+      
+      <div class="extra-fields show" id="student-box">
+        <div class="form-group">
+            <label>Select Your Class</label>
+            <div class="input-wrap">
+                <select id="s-class">
+                    <option value="">Choose Class</option>
+                    <option value="class-10">Class 10</option>
+                    <option value="class-12">Class 12</option>
+                </select>
+            </div>
+        </div>
+      </div>
+
+      <div class="extra-fields" id="teacher-box">
+        <div class="form-group"><label>Expert Subject</label><div class="input-wrap"><input type="text" id="t-subject" placeholder="e.g. Mathematics"></div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group"><label>Password</label><div class="input-wrap"><input type="password" id="pass" placeholder="Create Password" required></div></div>
+        <div class="form-group"><label>Confirm</label><div class="input-wrap"><input type="password" id="pass2" placeholder="Confirm" required></div></div>
+      </div>
+
+      <!-- LIVE PASSWORD HINTS -->
+      <div class="pass-hints" id="pass-hints">
+          <div class="hint-item" id="h-len">❌ Min 8 Characters</div>
+          <div class="hint-item" id="h-up">❌ At least one Uppercase</div>
+          <div class="hint-item" id="h-num">❌ At least one Number</div>
+          <div class="hint-item" id="h-sp">❌ One Special Character (@$!%*)</div>
+      </div>
+
+      <button type="submit" class="btn-register" id="regBtn">Create My Account →</button>
+    </form>
+
+    <p style="text-align:center; margin-top:20px; font-size:12px; color:#666;">Already have an account? <a href="login.html" style="color:var(--green-mid); font-weight:700; text-decoration:none;">Login Now</a></p>
+  </div>
+</div>
+
+<script>
+  // ── 1. UI TOGGLE LOGIC ──
+  const studentBtn = document.getElementById('r-student');
+  const teacherBtn = document.getElementById('r-teacher');
+  const studentBox = document.getElementById('student-box');
+  const teacherBox = document.getElementById('teacher-box');
+
+  studentBtn.onclick = () => { studentBox.classList.add('show'); teacherBox.classList.remove('show'); };
+  teacherBtn.onclick = () => { teacherBox.classList.add('show'); studentBox.classList.remove('show'); };
+  
+  // ── 2. LIVE PASSWORD VALIDATION ──
+  const passInput = document.getElementById('pass');
+  const hintsBox  = document.getElementById('pass-hints');
+
+  const requirements = [
+    { id: 'h-len', regex: /.{8,}/ },
+    { id: 'h-up',  regex: /[A-Z]/ },
+    { id: 'h-num', regex: /[0-9]/ },
+    { id: 'h-sp',  regex: /[@$!%*?&]/ }
+  ];
+
+  passInput.onfocus = () => hintsBox.style.display = 'block';
+  passInput.oninput = () => {
+      const val = passInput.value;
+      requirements.forEach(req => {
+          const el = document.getElementById(req.id);
+          if(req.regex.test(val)) {
+              el.classList.add('valid');
+              el.innerHTML = el.innerHTML.replace('❌', '✅');
+          } else {
+              el.classList.remove('valid');
+              el.innerHTML = el.innerHTML.replace('✅', '❌');
+          }
+      });
+  };
+
+  // ── 3. MASTER REGISTRATION HANDLER ──
+  async function handleRegister(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('pass').value;
+    const pass2 = document.getElementById('pass2').value;
+    const role = document.getElementById('r-teacher').checked ? 'teacher' : 'student';
+
+    // A. SENSELESS EMAIL BLOCKER (Strict Regex)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return alert("❌ Error: Please enter a real email address (e.g. name@gmail.com)");
+    }
+
+    // B. STRONG PASSWORD GATE
+    const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passRegex.test(pass)) {
+        return alert("❌ Error: Password is too weak! Please follow all requirements in the checklist.");
+    }
+
+    if(pass !== pass2) return alert("❌ Error: Passwords do not match.");
+
+    // C. PAYLOAD COLLECTION
+    const payload = {
+        name: (document.getElementById('fname').value.trim() + " " + document.getElementById('lname').value.trim()),
+        email: email.toLowerCase(),
+        mobile: document.getElementById('mobile').value.trim(),
+        password: pass,
+        role: role,
+        studentClass: role === 'student' ? document.getElementById('s-class').value : "Faculty",
+        expertSubject: role === 'teacher' ? document.getElementById('t-subject').value : ""
+    };
+
+    const btn = document.getElementById('regBtn');
+    btn.textContent = '🛡️ Securing Account...';
+    btn.disabled = true;
+
+    try {
+        const response = await AuthAPI.register(payload);
+        if (response && response.success) {
+            alert("✨ Registration successful! Redirecting to login...");
+            window.location.replace('login.html');
+        } else {
+            throw new Error(response.message || "Registration failed.");
+        }
+    } catch (err) {
+        alert("❌ Failed: " + err.message);
+        btn.textContent = "Create My Account →";
+        btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>

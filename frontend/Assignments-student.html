@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Assignments — Rural Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<style>
+:root{
+    --primary: #10b981;
+    --primary-lt: #f0fdf4;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --border: #f1f5f9;
+    --bg: #f8fafc;
+    --white: #fff;
+    --red: #ef4444;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+/* Changed opacity to 1 by default so you can see what's happening */
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; }
+
+/* --- PROFESSIONAL SIDEBAR --- */
+.side {
+    width: 280px; background: #fff; border-right: 1px solid var(--border);
+    padding: 2rem 1.5rem; display: flex; flex-direction: column;
+    position: sticky; top: 0; height: 100vh; flex-shrink: 0;
+}
+.logo { font-size: 1.6rem; font-weight: 800; color: #1e293b; margin-bottom: 2.5rem; text-decoration: none; }
+.logo span { color: var(--primary); }
+
+.nav-section-label {
+    font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+    color: #94a3b8; letter-spacing: 0.05em; margin: 1.5rem 0 0.8rem 0.8rem;
+}
+
+.nav-link {
+    display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+    text-decoration: none; color: var(--muted); font-size: 0.95rem;
+    font-weight: 600; border-radius: 12px; transition: 0.2s; margin-bottom: 4px;
+}
+.nav-link:hover { background: var(--bg); color: var(--ink); }
+.nav-link.on { background: var(--primary-lt); color: var(--primary); }
+.nav-link i { font-style: normal; font-size: 1.2rem; }
+.sign-out { margin-top: auto; color: var(--red) !important; }
+
+/* --- MAIN CONTENT --- */
+.main { flex: 1; padding: 2.5rem 3rem; max-width: 1100px; }
+.page-head { margin-bottom: 2rem; }
+.page-head h1 { font-size: 2rem; font-weight: 800; }
+.page-head p { color: var(--muted); margin-top: 4px; }
+
+/* ASSIGNMENT CARD */
+.a-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 1rem; }
+.a-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+.a-title { font-size: 1.1rem; font-weight: 700; }
+.meta-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.tag { background: var(--primary-lt); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: .75rem; font-weight: 700; }
+
+.submit-panel { display: none; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+.submit-panel.open { display: block; }
+.drop-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 25px; text-align: center; cursor: pointer; background: var(--bg); }
+
+.btn-submit { background: var(--primary); color: white; border: none; padding: 12px 28px; border-radius: 10px; font-weight: 700; cursor: pointer; margin-top: 12px; }
+.btn-toggle { background: var(--ink); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: .85rem; }
+
+.empty-state { text-align: center; padding: 60px; color: var(--muted); border: 2px dashed var(--border); border-radius: 20px; }
+</style>
+</head>
+<body>
+
+<div class="wrap" style="width: 100%; display: flex;">
+  <aside class="side">
+    <a href="#" class="logo">Rural<span>Learning</span></a>
+    <nav id="side-nav" style="display: contents;"></nav>
+  </aside>
+
+  <main class="main">
+    <div class="page-head">
+      <h1>My Assignments</h1>
+      <p>Submit your work before the deadline to earn learning points.</p>
+    </div>
+    <div id="a-container">
+      <div class="empty-state"><h3>⏳ Connecting to server...</h3></div>
+    </div>
+  </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("🚀 Page Initializing...");
+    
+    // 1. Check User Session
+    const user = getUser();
+    if (!user) {
+        console.error("No user found, redirecting...");
+        window.location.replace('login.html');
+        return;
+    }
+
+    // 2. Setup Sidebar
+    const nav = document.getElementById('side-nav');
+    nav.innerHTML = `
+        <a href="Dashboard-student.html" class="nav-link"><i>🏠</i> Dashboard</a>
+        <a href="Tutorials.html" class="nav-link"><i>🎥</i> Video Classes</a>
+        <a href="Assignments-student.html" class="nav-link on"><i>📝</i> Assignments</a>
+        <a href="Quiz.html" class="nav-link"><i>⏱️</i> Quizzes</a>
+        <a href="Materials.html" class="nav-link"><i>📄</i> Study Library</a>
+        <div class="nav-section-label">Account Settings</div>
+        <a href="student-profile.html" class="nav-link"><i>👤</i> My Profile</a>
+        <a href="#" onclick="clearSession()" class="nav-link sign-out"><i>🚪</i> Sign Out</a>
+    `;
+
+    // 3. Load Data
+    await loadAssignments();
+});
+
+async function loadAssignments() {
+    const container = document.getElementById('a-container');
+    try {
+        console.log("📡 Fetching assignments...");
+        const res = await ContentAPI.getAssignments();
+        
+        // Handle different response types (Array or Object)
+        const assignments = Array.isArray(res) ? res : (res.assignments || []);
+        console.log("✅ Data received:", assignments);
+
+        if (assignments.length === 0) {
+            container.innerHTML = `<div class="empty-state"><h3>📭 No assignments found.</h3><p>Check back later for new tasks.</p></div>`;
+            return;
+        }
+
+        container.innerHTML = assignments.map(a => {
+            const due = a.dueDate ? new Date(a.dueDate).toLocaleDateString() : 'No Date';
+            return `
+                <div class="a-card">
+                    <div class="a-card-top">
+                        <div style="flex:1;">
+                            <div class="a-title">${a.title || 'Untitled Assignment'}</div>
+                            <div class="meta-row">
+                                <span class="tag">📚 ${a.subject || 'General'}</span>
+                                <span class="tag" style="background:#fffbeb; color:#92400e;">📅 Due: ${due}</span>
+                            </div>
+                            <div style="margin-top:10px; color:#64748b; font-size:0.9rem;">${a.description || ''}</div>
+                        </div>
+                        <button class="btn-toggle" onclick="toggleSubmit(${a.id})">📤 Submit Work</button>
+                    </div>
+
+                    <div class="submit-panel" id="panel-${a.id}">
+                        <div class="drop-zone" onclick="document.getElementById('file-${a.id}').click()">
+                            <div style="font-size:1.5rem;">📁</div>
+                            <div style="font-size:.9rem; margin-top:8px;"><strong>Click to select file</strong></div>
+                            <div id="fname-${a.id}" style="color:var(--primary); font-weight:bold; margin-top:5px; display:none;"></div>
+                            <input type="file" id="file-${a.id}" hidden onchange="onFileSelect(${a.id}, this)">
+                        </div>
+                        <button class="btn-submit" id="btn-submit-${a.id}" onclick="submitWork(${a.id})" disabled>
+                            ✅ Upload and Submit
+                        </button>
+                    </div>
+                </div>`;
+        }).join('');
+    } catch(e) {
+        console.error("❌ API ERROR:", e);
+        container.innerHTML = `<div class="empty-state"><h3>⚠️ Connection Error</h3><p>Make sure your backend server is running on port 5000.</p></div>`;
+    }
+}
+
+function toggleSubmit(id) {
+    document.getElementById('panel-' + id).classList.toggle('open');
+}
+
+function onFileSelect(id, input) {
+    const file = input.files[0];
+    if (file) {
+        const nameEl = document.getElementById('fname-' + id);
+        nameEl.innerText = '📎 ' + file.name;
+        nameEl.style.display = 'block';
+        document.getElementById('btn-submit-' + id).disabled = false;
+    }
+}
+
+async function submitWork(assignmentId) {
+    const fileInput = document.getElementById(`file-${assignmentId}`);
+    const file = fileInput.files[0];
+    const btn = document.getElementById(`btn-submit-${assignmentId}`);
+
+    const formData = new FormData();
+    formData.append('workFile', file); 
+
+    btn.innerText = "⏳ Uploading...";
+    btn.disabled = true;
+
+    try {
+        const res = await ContentAPI.submitWork(assignmentId, formData);
+        if (res.success) {
+            alert("✅ Submitted!");
+            location.reload(); 
+        } else {
+            alert("❌ Error: " + res.message);
+            btn.innerText = "Upload and Submit";
+            btn.disabled = false;
+        }
+    } catch (error) {
+        alert("❌ Server Error");
+        btn.disabled = false;
+    }
+}
+</script>
+</body>
+</html>

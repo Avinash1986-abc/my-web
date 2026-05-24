@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Student Learning Portal — Rural Learning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <script src="api.js"></script>
+    <script src="main.js"></script>
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-soft: #f0fdf4;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; opacity: 0; transition: opacity 0.5s; }
+
+        .layout { display: flex; min-height: 100vh; }
+
+        /* SIDE NAVIGATION */
+        .sidebar { width: 280px; background: var(--card); border-right: 1px solid var(--border); padding: 40px 24px; position: sticky; top: 0; height: 100vh; }
+        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; font-weight: 900; text-decoration: none; color: var(--text); display: block; margin-bottom: 48px; }
+        .logo span { color: var(--primary); }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 16px; text-decoration: none; color: var(--text-muted); border-radius: 14px; font-weight: 600; transition: 0.3s; margin-bottom: 5px; }
+        .nav-link:hover, .nav-link.active { background: var(--primary-soft); color: var(--primary); }
+
+        /* MAIN CONTENT */
+        .content { flex: 1; padding: 40px 60px; max-width: 900px; margin: 0 auto; width: 100%; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .avatar { width: 35px; height: 35px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+
+        /* KPI METRICS (3 Boxes) */
+        .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px; }
+        .kpi-card { background: var(--card); padding: 24px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .kpi-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px; }
+        .kpi-value { font-size: 1.2rem; font-weight: 800; color: var(--text); }
+
+        /* CENTERED ACTION CARDS */
+        .section-title { font-family: 'Playfair Display'; font-size: 1.8rem; margin-bottom: 24px; }
+        .action-container { display: flex; flex-direction: column; gap: 24px; }
+        
+        .center-card { background: var(--card); border-radius: 24px; padding: 32px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+        .urgent-card { background: #fff7ed; border: 1px solid #fed7aa; }
+        
+        .deadline-box { background: white; padding: 20px; border-radius: 16px; margin-top: 20px; border-left: 4px solid #f97316; }
+        
+        .btn-main { display: inline-block; padding: 16px 32px; background: var(--primary); color: white; border-radius: 14px; font-weight: 700; text-decoration: none; text-align: center; margin-top: 20px; transition: 0.3s; }
+        .btn-main:hover { background: #059669; transform: translateY(-2px); }
+
+        .video-pill { display: flex; align-items: center; gap: 20px; background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <a href="#" class="logo">Rural<span>Learning</span></a>
+            <nav>
+                <a href="Dashboard-student.html" class="nav-link active">🏠 Dashboard</a>
+                <a href="Tutorials.html" class="nav-link">🎥 Video Lessons</a>
+                <a href="Assignments.html" class="nav-link">✏️ Assignments</a>
+                <a href="Quiz.html" class="nav-link">⏱️ Quizzes</a>
+                <a href="Materials.html" class="nav-link">📄 Study Library</a>
+                
+                <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+                <a href="student-profile.html" class="nav-link">👤 My Profile</a>
+                <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header class="header">
+                <div style="font-weight: 700; color: var(--primary); letter-spacing: -0.5px;">ENROLLED: <span id="user-class">...</span></div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="user-name" style="font-size: 0.85rem; font-weight: 700;">Student Name</span>
+                    <div id="user-init" class="avatar">?</div>
+                </div>
+            </header>
+
+            <section style="margin-bottom: 40px;">
+                <h1 class="section-title">Welcome back, <span id="first-name" style="color: var(--primary);">Scholar</span></h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: -10px;">Check your pending tasks and resume your lessons.</p>
+            </section>
+
+            <!-- 3 STABLE BOXES -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <span class="kpi-label">👤 Account Type</span>
+                    <div class="kpi-value" id="disp-role" style="color: var(--primary);">Student</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">📅 Academic Year</span>
+                    <div class="kpi-value">2026 - 2027</div>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-label">✅ Access Status</span>
+                    <div class="kpi-value" style="color: #10b981;">Verified Scholar</div>
+                </div>
+            </div>
+
+            <!-- CENTRAL ACTION CARDS (Stacked One by One) -->
+            <div class="action-container">
+                <!-- Urgent Deadline -->
+                <div class="center-card urgent-card">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.5rem;">⚠️</span>
+                        <h3 style="margin: 0; font-family: 'Playfair Display';">Urgent Deadline</h3>
+                    </div>
+                    <div id="upcoming-task" class="deadline-box">
+                        <div style="font-weight: 800; font-size: 1rem;">Pending Submissions</div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Check your assignments tab for any immediate tasks due this week.</div>
+                    </div>
+                    <a href="Assignments.html" class="btn-main" style="background: #ea580c;">Go to Assignments</a>
+                </div>
+
+                <!-- Resume Video -->
+                <div class="center-card">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.5rem;">🎬</span>
+                        <h3 style="margin: 0; font-family: 'Playfair Display';">Resume Last Video</h3>
+                    </div>
+                    <div class="video-pill">
+                        <div style="font-size: 2rem;">📺</div>
+                        <div>
+                            <div style="font-weight: 800; font-size: 1rem;" id="last-video-title">Continue Learning</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Pick up where you left off in your curriculum.</div>
+                        </div>
+                    </div>
+                    <a href="Tutorials.html" class="btn-main">Browse All Lessons</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (!user || user.role !== 'student') {
+            window.location.replace('login.html');
+            return;
+        }
+
+        // 1. UI Personalization
+        document.getElementById('user-name').innerText = user.name;
+        document.getElementById('first-name').innerText = user.name.split(' ')[0];
+        document.getElementById('user-init').innerText = user.name.charAt(0).toUpperCase();
+        document.getElementById('user-class').innerText = "CLASS " + (user.studentClass || "N/A");
+
+        // 2. Identity Box Logic
+        const roleElement = document.getElementById('disp-role');
+        if (user.role === 'student') {
+            roleElement.innerText = "Student Account";
+        }
+
+        // Show the page
+        document.body.style.opacity = '1';
+    });
+
+    function logout() {
+        localStorage.clear();
+        window.location.replace('login.html');
+    }
+    </script>
+</body>
+</html>

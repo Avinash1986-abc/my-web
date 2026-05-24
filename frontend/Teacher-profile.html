@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Instructor Profile — Rural Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<script src="main.js"></script>
+
+<style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #065f46;
+      --bg-page: #f8fafc;
+      --sidebar: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page); color: var(--text-main); opacity: 0; transition: opacity 0.5s ease; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 40px 24px; position: sticky; top: 0; height: 100vh; }
+    .logo { font-family: 'Playfair Display'; font-size: 1.4rem; font-weight: 900; color: var(--text-main); text-decoration: none; margin-bottom: 40px; display: block; }
+    .logo span { color: var(--primary); }
+    
+    .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--text-muted); border-radius: 12px; margin-bottom: 6px; font-weight: 600; transition: 0.3s; }
+    .nav-link:hover, .nav-link.active { background: #f0fdf4; color: var(--primary); }
+
+    /* CONTENT */
+    .main { flex: 1; padding: 40px 60px; max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    /* PROFILE HEADER */
+    .hero { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 40px; display: flex; align-items: center; gap: 32px; margin-bottom: 32px; box-shadow: var(--shadow); }
+    .avatar-large { width: 100px; height: 100px; background: var(--primary); color: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; }
+    .hero-info h2 { font-family: 'Playfair Display'; font-size: 2rem; margin-bottom: 4px; }
+    .hero-info p { color: var(--text-muted); font-weight: 500; }
+
+    /* GRID */
+    .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; }
+    .card { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 32px; margin-bottom: 32px; box-shadow: var(--shadow); }
+    .card-title { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1.2px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+
+    /* FORMS */
+    .fg { margin-bottom: 20px; }
+    label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
+    input { width: 100%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 14px; font-size: 0.95rem; font-family: inherit; background: #fcfcfc; transition: 0.3s; color: var(--text-main); }
+    input:focus { border-color: var(--primary); background: white; outline: none; }
+
+    .btn-save { background: var(--primary); color: white; padding: 16px; border: none; border-radius: 14px; width: 100%; font-weight: 700; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 10px;}
+    .btn-save:hover { background: var(--primary-dark); transform: translateY(-2px); }
+
+    /* STATS */
+    .stat-box { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
+    .stat-box:last-child { border-bottom: none; }
+    .stat-label { font-weight: 600; color: var(--text-muted); }
+    .stat-num { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+
+    #publicCardModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .modal-box { background: white; padding: 40px; border-radius: 30px; width: 400px; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a href="Dashboard-teacher.html" class="logo">Rural<span>Learning</span></a>
+    <nav>
+      <a href="Dashboard-teacher.html" class="nav-link">🏠 Overview</a>
+      <a href="Upload-video.html" class="nav-link">🎥 Video Lectures</a>
+      <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
+      <a href="Quiz.html" class="nav-link">⏱️ Quiz Creator</a>
+      <a href="Upload-materials.html" class="nav-link">📄 Study Notes</a>
+
+  
+      <a href="Chat.html" class="nav-link">💬 Class Messages</a>
+      <a href="Teacher-profile.html" class="nav-link active">👤 My Profile</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <section class="hero">
+      <div class="avatar-large" id="big-init">?</div>
+      <div class="hero-info">
+        <h2 id="big-name">Loading...</h2>
+        <p><span id="big-subject">Expert Faculty</span> • Verified Educator</p>
+      </div>
+    </section>
+
+    <div class="grid">
+      <!-- UPDATE FORM -->
+      <div class="card">
+        <h3 class="card-title">Profile Settings</h3>
+        <form id="profile-form">
+          <div class="fg">
+            <label>Full Name</label>
+            <input type="text" id="inp-name" required>
+          </div>
+          <div class="fg">
+            <label>Email Address</label>
+            <input type="email" id="inp-email" required>
+          </div>
+          <div class="fg">
+            <label>Mobile Number</label>
+            <input type="tel" id="inp-mobile" required>
+          </div>
+          <div class="fg">
+            <label>Expert Subject</label>
+            <input type="text" id="inp-subject" placeholder="e.g. Mathematics">
+          </div>
+          <button type="submit" class="btn-save" id="btn-submit">💾 Update Profile Information</button>
+        </form>
+      </div>
+
+      <!-- STATS -->
+      <aside>
+        <div class="card">
+          <h3 class="card-title">Your Impact</h3>
+          <div class="stat-box"><span class="stat-label">Videos</span><span class="stat-num" id="s-vids">0</span></div>
+          <div class="stat-box"><span class="stat-label">Notes</span><span class="stat-num" id="s-mats">0</span></div>
+          <div class="stat-box"><span class="stat-label">Quizzes</span><span class="stat-num" id="s-quiz">0</span></div>
+          <div class="stat-box" style="margin-top:10px; border-top:1px solid var(--border); padding-top:20px;">
+            <span class="stat-label">Student Enrollment</span>
+            <span class="stat-num" style="color: #6366f1;">12+</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Public Preview</h3>
+          <button onclick="togglePublicCard(true)" style="background: var(--bg-page); border: 1px solid var(--border); padding: 12px; border-radius: 12px; width: 100%; cursor: pointer; font-weight: 700;">👁️ View Student Card</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="publicCardModal">
+    <div class="modal-box">
+        <div class="avatar-large" id="modal-init" style="margin: 0 auto 20px; width: 80px; height: 80px;">?</div>
+        <h2 id="modal-name">Name</h2>
+        <p id="modal-sub" style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">Subject</p>
+        <button onclick="togglePublicCard(false)" style="color: var(--text-muted); background: none; border: none; font-weight: 700; cursor: pointer;">Close Preview</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        // 1. Get Session
+        const user = getUser();
+        if (!user || user.role !== 'teacher') { window.location.replace('login.html'); return; }
+
+        // 2. Fetch Fresh Data from MySQL (The "Pro" Way)
+        try {
+            const res = await AuthAPI.getProfile();
+            if (res && res.success) {
+                // Update everything with real DB data
+                const freshData = res.user;
+                populateUI(freshData);
+                localStorage.setItem('currentUser', JSON.stringify(freshData));
+            } else {
+                populateUI(user);
+            }
+        } catch (e) { populateUI(user); }
+
+        syncStats();
+        document.body.style.opacity = '1';
+    });
+
+    function populateUI(data) {
+        document.getElementById('big-name').innerText = data.name;
+        document.getElementById('big-init').innerText = data.name.charAt(0).toUpperCase();
+        document.getElementById('big-subject').innerText = data.expertSubject || "Expert Faculty";
+
+        document.getElementById('inp-name').value = data.name || "";
+        document.getElementById('inp-email').value = data.email || "";
+        document.getElementById('inp-mobile').value = data.mobile || "";
+        document.getElementById('inp-subject').value = data.expertSubject || "";
+    }
+
+    async function syncStats() {
+        // Count locally stored items
+        const vids = JSON.parse(localStorage.getItem('rl_vids_v3') || '[]');
+        const quiz = JSON.parse(localStorage.getItem('rl_quizzes') || '[]');
+        
+        document.getElementById('s-vids').innerText = vids.length;
+        document.getElementById('s-quiz').innerText = quiz.length;
+
+        // Fetch materials from API
+        try {
+            const mats = await ContentAPI.getMaterials();
+            document.getElementById('s-mats').innerText = mats.length || 0;
+        } catch(e) { }
+    }
+
+    // THE EDIT LOGIC
+    document.getElementById('profile-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-submit');
+        btn.innerText = "⏳ Saving Changes...";
+        btn.disabled = true;
+
+        const updated = {
+            name: document.getElementById('inp-name').value,
+            email: document.getElementById('inp-email').value,
+            mobile: document.getElementById('inp-mobile').value,
+            expertSubject: document.getElementById('inp-subject').value
+        };
+
+        try {
+            const res = await AuthAPI.updateProfile(updated);
+            if (res && res.success) {
+                alert("✨ Profile successfully updated in MySQL!");
+                // Refresh session and UI
+                localStorage.setItem('currentUser', JSON.stringify({...getUser(), ...updated}));
+                location.reload(); 
+            } else {
+                alert("Error: " + (res.message || "Failed to save"));
+            }
+        } catch(err) {
+            alert("Connection error. Check your server.");
+        } finally {
+            btn.innerText = "💾 Update Profile Information";
+            btn.disabled = false;
+        }
+    };
+
+    function togglePublicCard(show) {
+        const modal = document.getElementById('publicCardModal');
+        const user = getUser();
+        if (show) {
+            document.getElementById('modal-name').innerText = user.name;
+            document.getElementById('modal-init').innerText = user.name.charAt(0).toUpperCase();
+            document.getElementById('modal-sub').innerText = user.expertSubject || "Faculty";
+            modal.style.display = 'flex';
+        } else { modal.style.display = 'none'; }
+    }
+</script>
+</body>
+</html>

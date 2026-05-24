@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Study Library — RuralLearning</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="api.js"></script>
+<script src="main.js"></script>
+<style>
+/* ── RESET & THEME ── */
+:root{--green:#10b981;--green-lt:#f0fdf4;--green-dk:#064e3b;--ink:#0f172a;--muted:#64748b;--border:#e2e8f0;--bg:#f8fafc;--white:#fff;--red:#ef4444;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;opacity:0;transition:opacity .4s;}
+
+.wrap{display:flex;min-height:100vh;position:relative;z-index:1;}
+
+/* ── SIDEBAR ── */
+.side{width:260px;background:var(--white);border-right:1px solid var(--border);padding:2rem 1.5rem;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;}
+.logo{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);text-decoration:none;margin-bottom:2.5rem;display:block;}
+.logo span{color:var(--green);}
+.nav{list-style:none; flex: 1;}
+.nav a{display:flex;align-items:center;gap:12px;padding:12px 15px;border-radius:12px;text-decoration:none;color:var(--muted);font-size:.9rem;font-weight:600;transition:.3s;}
+.nav a:hover,.nav a.on{background:var(--green-lt);color:var(--green);box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);}
+
+.prof{margin-top:auto;display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg);border-radius:14px; border: 1px solid var(--border);}
+.av{width:36px;height:36px;background:var(--green);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;padding:3rem 4rem;}
+#teacher-view, #student-view { display: none; } /* Hidden until role detected */
+
+/* ── STUDENT: DIGITAL LIBRARY STYLE ── */
+.search-wrapper { display: flex; max-width: 650px; margin: 0 auto 3rem; gap: 12px; }
+.search-input { flex: 1; padding: 15px 25px; border-radius: 50px; border: 1.5px solid var(--border); outline: none; font-size: 1rem; transition: 0.3s; background: white; }
+.search-input:focus { border-color: var(--green); box-shadow: 0 0 0 4px var(--green-lt); }
+.btn-search { background: var(--ink); color: white; border: none; padding: 0 25px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+
+.res-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+.res-card { background: white; border-radius: 20px; border: 1px solid var(--border); padding: 25px; transition: 0.3s; cursor: pointer; position: relative; }
+.res-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.05); border-color: var(--green); }
+.res-icon { font-size: 2.2rem; margin-bottom: 15px; display: block; }
+.res-tag { font-size: 0.65rem; font-weight: 800; color: var(--green); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+.res-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; color: var(--ink); line-height: 1.4; }
+.res-meta { font-size: 0.75rem; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.btn-view { display: block; width: 100%; text-align: center; margin-top: 15px; padding: 10px; background: var(--green-lt); color: var(--green); text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 0.8rem; }
+
+/* ── TEACHER: STUDIO STYLE ── */
+.card{background:var(--white);border:1px solid var(--border);border-radius:24px;padding:2rem;margin-bottom:2.5rem;box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);}
+.upload-grid{display:grid;grid-template-columns: 1.2fr 1fr; gap: 30px;}
+.fg{margin-bottom:1.1rem;}
+label{display:block;font-size:.75rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;color:var(--muted);}
+input, select{width:100%;padding:13px;border:1px solid var(--border);border-radius:12px;background:#fcfcfc; font-family: inherit;}
+.file-selection{border:2px dashed var(--border);border-radius:18px;padding:25px;text-align:center;background:#fff;margin-bottom:15px; cursor: pointer;}
+.btn-pub{width:100%;padding:15px;background:var(--green);color:#fff;border:none;border-radius:12px;font-weight:700;cursor:pointer;font-size:1rem; transition: .3s;}
+.btn-pub:hover { background: var(--green-dk); }
+
+.v-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); }
+.v-table th { text-align: left; padding: 15px 20px; font-size: 0.7rem; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+.v-table td { padding: 15px 20px; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+
+/* Progress */
+.prog-box{display:none;margin-top:15px;}
+.prog-bar{height:7px;background:var(--border);border-radius:10px;overflow:hidden; margin-top: 5px;}
+.prog-fill{height:100%;background:var(--green);width:0%;transition:0.2s;}
+
+.empty-state { text-align: center; padding: 60px; color: var(--muted); grid-column: 1/-1; border: 2px dashed var(--border); border-radius: 24px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+    <aside class="side">
+        <a href="#" class="logo">Rural<span>Learning</span></a>
+        <nav class="nav">
+            <a href="#" id="dash-link">🏠 Dashboard</a>
+          <li><a href="Upload-video.html" class="on">📹 Video Lessons</a></li>
+            <a href="Upload-materials.html" class="on">📄 Study Library</a>
+            <a href="Quiz.html">⏱️ Assignments</a>
+        </nav>
+        <div class="prof">
+            <div class="av" id="u-av">?</div>
+            <div>
+                <div id="u-name" style="font-weight:700; font-size:.85rem;">User</div>
+                <div id="u-role" style="font-size:.65rem; color:var(--muted); font-weight: 700; text-transform: uppercase;">Role</div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main">
+        
+        <!-- STUDENT VIEW (Library Style) -->
+        <div id="student-view">
+            <header style="margin-bottom: 2.5rem;">
+                <h1 style="font-family: 'DM Serif Display'; font-size: 2.5rem; margin-bottom: 0.5rem;">Digital Library</h1>
+                <p style="color: var(--muted); font-weight: 500;">Access study notes, presentations, and resources for your class.</p>
+            </header>
+
+            <div class="search-wrapper">
+                <input type="text" id="m-search" class="search-input" placeholder="Search by topic, subject or book name...">
+                <button class="btn-search" id="btn-search">Search</button>
+            </div>
+
+            <div class="res-grid" id="student-grid">
+                <!-- Material Cards Injected Here -->
+            </div>
+        </div>
+
+        <!-- TEACHER VIEW (Studio Style) -->
+        <div id="teacher-view">
+            <h1 style="font-family: 'DM Serif Display'; font-size: 2.5rem; margin-bottom: 2rem;">Material Studio</h1>
+            
+            <div class="card">
+                <div class="card-title">Upload Study Materials</div>
+                <div class="upload-grid">
+                    <div>
+                        <div class="fg"><label>Material Title</label><input id="mTitle" type="text" placeholder="e.g. Chapter 1: Notes"></div>
+                        <div class="fg"><label>Subject</label><input id="mSubject" type="text" placeholder="e.g. Science"></div>
+                        <div class="fg"><label>Target Class</label><input id="mClass" type="text" placeholder="e.g. Class 10"></div>
+                    </div>
+                    <div>
+                        <div class="file-selection" onclick="document.getElementById('mFile').click()">
+                            <span style="font-size: 2rem; display: block; margin-bottom: 10px;">📄</span>
+                            <p style="font-size: 0.8rem; color: var(--muted);">Click to select PDF/PPT (Max 200MB)</p>
+                            <input type="file" id="mFile" accept=".pdf,.ppt,.pptx" hidden>
+                            <div id="file-name" style="margin-top: 10px; font-weight: 700; font-size: 0.75rem; color: var(--green);"></div>
+                        </div>
+                        <button class="btn-pub" id="publishBtn">🚀 PUBLISH TO STUDENTS</button>
+                        
+                        <div class="prog-box" id="progBox">
+                            <div style="display:flex; justify-content:space-between; font-size:.7rem; font-weight: 800;">
+                                <span>Uploading...</span><span id="progPct">0%</span>
+                            </div>
+                            <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom:1.5rem; font-weight: 800;">Your Uploaded Resources</h3>
+            <table class="v-table">
+                <thead><tr><th>Title</th><th>Subject</th><th>Class</th><th>Date</th><th>Action</th></tr></thead>
+                <tbody id="mTableBody"></tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script>
+let allMaterials = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const user = getUser();
+    if(!user) return window.location.replace('login.html');
+
+    // UI Identity
+    document.getElementById('u-name').innerText = user.name;
+    document.getElementById('u-av').innerText = user.name.charAt(0).toUpperCase();
+    document.getElementById('u-role').innerText = user.role === 'teacher' ? 'Faculty Member' : user.studentClass;
+    document.getElementById('dash-link').href = user.role === 'teacher' ? 'Dashboard-teacher.html' : 'Dashboard-student.html';
+
+    // ── ROLE LOGIC ──
+    if (user.role === 'teacher') {
+        document.getElementById('teacher-view').style.display = 'block';
+        document.getElementById('publishBtn').onclick = doUpload;
+        document.getElementById('mFile').onchange = e => {
+            if(e.target.files[0]) document.getElementById('file-name').innerText = e.target.files[0].name;
+        };
+        loadTeacherMaterials();
+    } else {
+        document.getElementById('student-view').style.display = 'block';
+        loadStudentLibrary();
+        
+        // Search Listener
+        const searchInp = document.getElementById('m-search');
+        const searchBtn = document.getElementById('btn-search');
+        
+        const filter = () => {
+            const q = searchInp.value.toLowerCase();
+            const filtered = allMaterials.filter(m => m.title.toLowerCase().includes(q) || m.subject.toLowerCase().includes(q));
+            renderStudentGrid(filtered);
+        };
+        searchInp.oninput = filter;
+        searchBtn.onclick = filter;
+    }
+
+    document.body.style.opacity = '1';
+});
+
+// ── STUDENT FUNCTIONS ──
+async function loadStudentLibrary() {
+    try {
+        const res = await ContentAPI.getMaterials();
+        allMaterials = Array.isArray(res) ? res : [];
+        renderStudentGrid(allMaterials);
+    } catch(e) { console.error("Library load error"); }
+}
+
+function renderStudentGrid(list) {
+    const grid = document.getElementById('student-grid');
+    if(!list.length) { grid.innerHTML = '<div class="empty-state">No resources found matching your search.</div>'; return; }
+    
+    grid.innerHTML = list.map(m => `
+<div class="res-card" onclick="window.open('http://localhost:5000${m.fileUrl}', '_blank')">
+            <span class="res-icon">${m.fileUrl.endsWith('.pdf') ? '📕' : '📙'}</span>
+            <span class="res-tag">${m.subject}</span>
+            <h4 class="res-title">${m.title}</h4>
+            <div class="res-meta">
+                <span>👤 ${m.teacherName || 'Faculty'}</span>
+                <span>•</span>
+                <span>${m.targetClass}</span>
+            </div>
+            <a href="#" class="btn-view">Open Resource</a>
+        </div>
+    `).join('');
+}
+
+// ── TEACHER FUNCTIONS ──
+async function loadTeacherMaterials() {
+    try {
+        const res = await ContentAPI.getMaterials();
+        const body = document.getElementById('mTableBody');
+        if(!res || res.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; color:#999;">No uploads yet.</td></tr>';
+            return;
+        }
+        body.innerHTML = res.reverse().map(m => `
+            <tr>
+                <td style="font-weight:700;">${m.title}</td>
+                <td><span style="background:var(--green-lt); color:var(--green); padding:3px 10px; border-radius:6px; font-size:.7rem; font-weight:800;">${m.subject}</span></td>
+                <td>${m.targetClass || '—'}</td>
+                <td>${new Date(m.created_at).toLocaleDateString()}</td>
+                <td><button onclick="deleteMaterial(${m.id})" style="color:var(--red); font-weight:700; background:none; border:none; cursor:pointer;">Delete</button></td>
+            </tr>
+        `).join('');
+    } catch(e) { }
+}
+
+async function doUpload() {
+    const file = document.getElementById('mFile').files[0];
+    const title = document.getElementById('mTitle').value.trim();
+    if (!file || !title) return alert("Please select a file and enter a title.");
+
+    const btn = document.getElementById('publishBtn');
+    const pb = document.getElementById('progBox');
+    btn.disabled = true; pb.style.display = 'block';
+
+    const formData = new FormData();
+    formData.append('material', file); 
+    formData.append('title', title);
+    formData.append('subject', document.getElementById('mSubject').value);
+    formData.append('targetClass', document.getElementById('mClass').value);
+
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = (e) => {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progPct').innerText = pct + '%';
+    };
+    xhr.onload = () => {
+        if(xhr.status < 300) { alert("Published Successfully!"); window.location.reload(); }
+        else alert("Error occurred. Check backend.");
+    };
+    xhr.open("POST", "http://localhost:5000/api/materials/upload");
+    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem('rlt_token'));
+    xhr.send(formData);
+}
+
+async function deleteMaterial(id) {
+    if(!confirm("Remove this resource?")) return;
+    const res = await ContentAPI.deleteMaterial(id);
+    if(res.success) loadTeacherMaterials();
+}
+</script>
+</body>
+</html>
