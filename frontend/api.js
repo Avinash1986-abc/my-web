@@ -3,7 +3,7 @@
  * Path: /api.js
  */
 
-const BASE_URL = 'http://localhost:5000/api'; 
+const BASE_URL = 'https://my-web-1vxa.onrender.com/api';
 const ROOT_URL = 'http://localhost:5000'; 
 
 // ── 1. SESSION MANAGEMENT ──
