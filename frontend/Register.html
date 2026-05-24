@@ -104,7 +104,7 @@
           <div class="hint-item" id="h-sp">❌ One Special Character (@$!%*)</div>
       </div>
 
-      <button type="submit" class="btn-register" id="regBtn">Create My Account →</button>
+      <button type="submit" class="btn-Register" id="regBtn">Create My Account →</button>
     </form>
 
     <p style="text-align:center; margin-top:20px; font-size:12px; color:#666;">Already have an account? <a href="Login.html" style="color:var(--green-mid); font-weight:700; text-decoration:none;">Login Now</a></p>
@@ -186,10 +186,10 @@
     btn.disabled = true;
 
     try {
-        const response = await AuthAPI.register(payload);
+        const response = await AuthAPI.Register(payload);
         if (response && response.success) {
             alert("✨ Registration successful! Redirecting to login...");
-            window.location.replace('login.html');
+            window.location.replace('Login.html');
         } else {
             throw new Error(response.message || "Registration failed.");
         }
