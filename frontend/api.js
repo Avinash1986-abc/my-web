@@ -4,7 +4,7 @@
  */
 
 const BASE_URL = 'https://my-web-1vxa.onrender.com/api';
-const ROOT_URL = 'http://localhost:5000'; 
+const ROOT_URL = 'https://my-web-1vxa.onrender.com';
 
 // ── 1. SESSION MANAGEMENT ──
 const saveToken = (token) => localStorage.setItem('rlt_token', token);
