@@ -127,7 +127,7 @@
         
         // Redirect if not logged in or not a teacher
         if (!user || user.role !== 'teacher') {
-            window.location.replace('login.html');
+            window.location.replace('Login.html');
             return;
         }
 
@@ -141,7 +141,7 @@
 
     function logout() {
         localStorage.clear();
-        window.location.replace('login.html');
+        window.location.replace('Login.html');
     }
     </script>
 </body>
