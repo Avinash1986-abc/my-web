@@ -145,7 +145,7 @@
         const user = JSON.parse(localStorage.getItem('currentUser'));
         
         if (!user || user.role !== 'student') {
-            window.location.replace('login.html');
+            window.location.replace('Login.html');
             return;
         }
 
@@ -167,7 +167,7 @@
 
     function logout() {
         localStorage.clear();
-        window.location.replace('login.html');
+        window.location.replace('Login.html');
     }
     </script>
 </body>

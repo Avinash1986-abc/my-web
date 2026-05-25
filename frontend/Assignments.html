@@ -103,8 +103,8 @@ td{padding:15px;font-size:.85rem;border-bottom:1px solid #f3f4f6;}
 document.addEventListener('DOMContentLoaded', () => {
     const user = getUser();
     // ✅ Auth + Role Guard
-    if (!user) { window.location.replace('login.html'); return; }
-    if (user.role !== 'teacher') { window.location.replace('assignments-student.html'); return; }
+    if (!user) { window.location.replace('Login.html'); return; }
+    if (user.role !== 'teacher') { window.location.replace('Assignments-student.html'); return; }
 
     document.getElementById('u-name').innerText = user.name;
     document.getElementById('u-av').innerText   = user.name.charAt(0).toUpperCase();
