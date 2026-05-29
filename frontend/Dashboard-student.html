@@ -10,52 +10,194 @@
 
     <style>
         :root {
-            --primary: #10b981;
-            --primary-soft: #f0fdf4;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --primary: #52b788;
+            --primary-soft: rgba(82, 183, 136, 0.1);
+            --bg: #081c15;
+            --card: rgba(255, 255, 255, 0.04);
+            --sidebar: #0b251d;
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --border: rgba(82, 183, 136, 0.15);
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            --accent: #f4a261;
         }
 
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); margin: 0; opacity: 0; transition: opacity 0.5s; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            opacity: 0; 
+            transition: opacity 0.5s;
+            overflow-y: auto;
+        }
+
+        /* background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                              radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+            pointer-events: none;
+        }
 
         .layout { display: flex; min-height: 100vh; }
 
         /* SIDE NAVIGATION */
-        .sidebar { width: 280px; background: var(--card); border-right: 1px solid var(--border); padding: 40px 24px; position: sticky; top: 0; height: 100vh; }
-        .logo { font-family: 'Playfair Display'; font-size: 1.5rem; font-weight: 900; text-decoration: none; color: var(--text); display: block; margin-bottom: 48px; }
+        .sidebar { 
+            width: 280px; 
+            background: var(--sidebar); 
+            border-right: 1px solid var(--border); 
+            padding: 40px 24px; 
+            position: sticky; 
+            top: 0; 
+            height: 100vh; 
+        }
+        .logo { 
+            font-family: 'Playfair Display'; 
+            font-size: 1.5rem; 
+            font-weight: 900; 
+            text-decoration: none; 
+            color: var(--text); 
+            display: block; 
+            margin-bottom: 48px; 
+        }
         .logo span { color: var(--primary); }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 14px 16px; text-decoration: none; color: var(--text-muted); border-radius: 14px; font-weight: 600; transition: 0.3s; margin-bottom: 5px; }
-        .nav-link:hover, .nav-link.active { background: var(--primary-soft); color: var(--primary); }
+        .nav-link { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 14px 16px; 
+            text-decoration: none; 
+            color: var(--text-muted); 
+            border-radius: 14px; 
+            font-weight: 600; 
+            transition: 0.3s; 
+            margin-bottom: 5px; 
+        }
+        .nav-link:hover, .nav-link.active { 
+            background: var(--primary-soft); 
+            color: var(--primary); 
+            box-shadow: 0 4px 20px rgba(82, 183, 136, 0.08);
+        }
 
         /* MAIN CONTENT */
-        .content { flex: 1; padding: 40px 60px; max-width: 900px; margin: 0 auto; width: 100%; }
+        .content { 
+            flex: 1; 
+            padding: 40px 60px; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            width: 100%; 
+            animation: fadeInUp 0.8s ease;
+        }
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .avatar { width: 35px; height: 35px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+        .avatar { 
+            width: 35px; 
+            height: 35px; 
+            background: var(--primary); 
+            color: #081c15; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 800; 
+        }
 
         /* KPI METRICS (3 Boxes) */
         .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 48px; }
-        .kpi-card { background: var(--card); padding: 24px; border-radius: 24px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .kpi-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 10px; }
-        .kpi-value { font-size: 1.2rem; font-weight: 800; color: var(--text); }
+        .kpi-card { 
+            background: var(--card); 
+            padding: 24px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border); 
+            box-shadow: var(--shadow); 
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+        .kpi-label { 
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            display: block; 
+            margin-bottom: 10px; 
+        }
+        .kpi-value { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
 
         /* CENTERED ACTION CARDS */
         .section-title { font-family: 'Playfair Display'; font-size: 1.8rem; margin-bottom: 24px; }
         .action-container { display: flex; flex-direction: column; gap: 24px; }
         
-        .center-card { background: var(--card); border-radius: 24px; padding: 32px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-        .urgent-card { background: #fff7ed; border: 1px solid #fed7aa; }
+        .center-card { 
+            background: var(--card); 
+            border-radius: 24px; 
+            padding: 32px; 
+            border: 1px solid var(--border); 
+            box-shadow: var(--shadow); 
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+        .center-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+        }
+        .urgent-card { 
+            background: rgba(244, 162, 97, 0.05); 
+            border: 1px solid rgba(244, 162, 97, 0.25); 
+        }
+        .urgent-card:hover {
+            border-color: var(--accent);
+        }
         
-        .deadline-box { background: white; padding: 20px; border-radius: 16px; margin-top: 20px; border-left: 4px solid #f97316; }
+        .deadline-box { 
+            background: rgba(255, 255, 255, 0.02); 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-top: 20px; 
+            border-left: 4px solid var(--accent); 
+        }
         
-        .btn-main { display: inline-block; padding: 16px 32px; background: var(--primary); color: white; border-radius: 14px; font-weight: 700; text-decoration: none; text-align: center; margin-top: 20px; transition: 0.3s; }
-        .btn-main:hover { background: #059669; transform: translateY(-2px); }
+        .btn-main { 
+            display: inline-block; 
+            padding: 16px 32px; 
+            background: var(--primary); 
+            color: #081c15; 
+            border-radius: 14px; 
+            font-weight: 700; 
+            text-decoration: none; 
+            text-align: center; 
+            margin-top: 20px; 
+            transition: 0.3s; 
+            box-shadow: 0 4px 15px rgba(82, 183, 136, 0.25);
+        }
+        .btn-main:hover { 
+            background: #409a71; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(82, 183, 136, 0.35);
+        }
 
-        .video-pill { display: flex; align-items: center; gap: 20px; background: #f8fafc; padding: 20px; border-radius: 16px; margin-top: 20px; }
+        .video-pill { 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            background: rgba(255, 255, 255, 0.02); 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-top: 20px; 
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -69,9 +211,12 @@
                 <a href="Assignments.html" class="nav-link">✏️ Assignments</a>
                 <a href="Quiz.html" class="nav-link">⏱️ Quizzes</a>
                 <a href="Materials.html" class="nav-link">📄 Study Library</a>
+                <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
                 
                 <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
                 <a href="student-profile.html" class="nav-link">👤 My Profile</a>
+                <a href="Progress.html" class="nav-link">📊 My Reports</a>
+                <a href="Scoreboard.html" class="nav-link">🏆 Honor Board</a>
                 <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
             </nav>
         </aside>
@@ -142,7 +287,7 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const user = JSON.parse(sessionStorage.getItem('currentUser'));
         
         if (!user || user.role !== 'student') {
             window.location.replace('Login.html');
@@ -166,7 +311,7 @@
     });
 
     function logout() {
-        localStorage.clear();
+        sessionStorage.clear();
         window.location.replace('Login.html');
     }
     </script>

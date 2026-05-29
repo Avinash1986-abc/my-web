@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rural Learning Portal | Empowering Education</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;900&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #2d6a4f; 
+            --primary: #52b788; 
             --light-green: #52b788;
-            --accent: #ffb703;
+            --accent: #f4a261;
             --dark: #081c15;
-            --glass: rgba(255, 255, 255, 0.05);
+            --glass: rgba(255, 255, 255, 0.04);
+            --border: rgba(82, 183, 136, 0.15);
             --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
@@ -21,7 +21,7 @@
         body {
             background-color: var(--dark);
             color: white;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             line-height: 1.6;
             overflow-x: hidden;
         }
@@ -32,18 +32,19 @@
             display: flex; justify-content: space-between; align-items: center;
             z-index: 1000; backdrop-filter: blur(15px);
             background: rgba(8, 28, 21, 0.85);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid var(--border);
         }
-        .logo { font-family: 'Playfair Display'; font-size: 1.6rem; color: white; text-decoration: none; }
+        .logo { font-family: 'Playfair Display'; font-size: 1.6rem; color: white; text-decoration: none; font-weight: 900; }
         .logo span { color: var(--light-green); }
         
-        .nav-links { display: flex; gap: 30px; list-style: none; }
-        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 500; transition: var(--transition); }
+        .nav-links { display: flex; gap: 30px; list-style: none; align-items: center; }
+        .nav-links a { color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 600; transition: var(--transition); }
         .nav-links a:hover { color: var(--light-green); }
         
-        .auth-btns { display: flex; gap: 15px; }
-        .btn-login { padding: 10px 25px; border: 1px solid var(--light-green); color: white; text-decoration: none; border-radius: 5px; cursor: pointer; transition: 0.3s;}
-        .btn-register { padding: 10px 25px; background: var(--light-green); color: var(--dark); text-decoration: none; border-radius: 5px; font-weight: 700; transition: 0.3s;}
+        .auth-btns { display: flex; gap: 15px; align-items: center; }
+        .btn-login { padding: 10px 24px; border: 1px solid var(--light-green); color: white; text-decoration: none; border-radius: 8px; cursor: pointer; transition: 0.3s; font-weight: 600; }
+        .btn-login:hover { background: rgba(82, 183, 136, 0.1); }
+        .btn-register { padding: 10px 24px; background: var(--light-green); color: var(--dark); text-decoration: none; border-radius: 8px; font-weight: 700; transition: 0.3s; }
         .btn-register:hover { background: var(--accent); }
 
         /* --- 2. PREMIUM HERO SECTION --- */
@@ -51,36 +52,46 @@
             height: 100vh;
             display: flex; align-items: center; justify-content: center;
             text-align: center; padding: 0 10%;
-            background: linear-gradient(rgba(8, 28, 21, 0.8), rgba(8, 28, 21, 0.9)), 
+            background: linear-gradient(rgba(8, 28, 21, 0.85), rgba(8, 28, 21, 0.95)), 
                         url('https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=2000');
             background-size: cover; background-position: center;
+            position: relative;
         }
-        .hero-box h1 { font-family: 'Playfair Display'; font-size: 5rem; line-height: 1; margin-bottom: 20px; }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                              radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+            pointer-events: none;
+        }
+        .hero-box h1 { font-family: 'Playfair Display'; font-size: 5rem; line-height: 1.1; margin-bottom: 24px; }
         .hero-box h1 span { color: var(--light-green); }
-        .hero-box p { font-size: 1.3rem; color: rgba(255,255,255,0.6); max-width: 800px; margin: 0 auto 40px; }
+        .hero-box p { font-size: 1.25rem; color: rgba(255,255,255,0.6); max-width: 800px; margin: 0 auto 40px; font-weight: 400; }
         .cta-group { display: flex; gap: 20px; justify-content: center; }
         .main-btn { padding: 18px 45px; border-radius: 50px; text-decoration: none; font-weight: 800; transition: var(--transition); font-size: 1.1rem; }
         .btn-p { background: var(--light-green); color: var(--dark); box-shadow: 0 10px 30px rgba(82, 183, 136, 0.3); }
-        .btn-p:hover { transform: translateY(-5px); background: var(--accent); }
-        .btn-s { border: 2px solid white; color: white; }
+        .btn-p:hover { transform: translateY(-5px); background: var(--accent); box-shadow: 0 12px 35px rgba(244, 162, 97, 0.4); }
+        .btn-s { border: 2.2px solid white; color: white; }
         .btn-s:hover { background: white; color: var(--dark); }
-
+ 
         /* --- 3. VALUE POINTS SECTION --- */
         .points-section { padding: 100px 10%; }
         .sec-title { text-align: center; margin-bottom: 70px; }
-        .sec-title h2 { font-family: 'Playfair Display'; font-size: 3rem; margin-bottom: 10px; }
-        .sec-title p { color: var(--light-green); font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
-
-        .points-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .sec-title h2 { font-family: 'Playfair Display'; font-size: 3rem; margin-bottom: 12px; }
+        .sec-title p { color: var(--light-green); font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; }
+ 
+        .points-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
         .point-card {
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.05);
-            padding: 40px; border-radius: 20px; transition: var(--transition);
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 40px; border-radius: 24px; transition: var(--transition);
+            backdrop-filter: blur(10px);
         }
-        .point-card:hover { transform: translateY(-15px); background: rgba(82, 183, 136, 0.1); border-color: var(--light-green); }
+        .point-card:hover { transform: translateY(-12px); background: rgba(82, 183, 136, 0.08); border-color: var(--light-green); }
         .icon { font-size: 3rem; margin-bottom: 20px; }
-        .point-card h3 { margin-bottom: 15px; font-size: 1.5rem; }
-        .point-card p { color: rgba(255,255,255,0.5); }
-
+        .point-card h3 { margin-bottom: 15px; font-size: 1.4rem; font-family: 'Playfair Display'; }
+        .point-card p { color: rgba(255,255,255,0.5); font-size: 0.95rem; }
+ 
         /* --- 4. HOW IT WORKS --- */
         .how-section { background: rgba(0,0,0,0.3); padding: 100px 10%; position: relative; }
         .steps-container { display: flex; justify-content: space-between; position: relative; gap: 30px; }
@@ -89,12 +100,12 @@
         
         /* --- 5. CONNECTED CTA --- */
         .final-cta { padding: 100px 10%; text-align: center; }
-        .cta-card { background: linear-gradient(135deg, var(--primary), var(--dark)); padding: 80px; border-radius: 30px; border: 1px solid var(--light-green); }
-
+        .cta-card { background: linear-gradient(135deg, var(--primary), var(--dark)); padding: 80px 40px; border-radius: 30px; border: 1px solid var(--light-green); }
+ 
         /* Animations */
         .reveal { opacity: 0; transform: translateY(30px); transition: 1s all ease; }
         .reveal.active { opacity: 1; transform: translateY(0); }
-
+ 
         @media (max-width: 768px) {
             .hero-box h1 { font-size: 3rem; }
             .nav-links { display: none; }
@@ -103,7 +114,7 @@
     </style>
 </head>
 <body>
-
+ 
     <!-- NAV BAR - DYNAMIC CONTENT -->
     <nav>
         <a href="index.html" class="logo">Rural<span>Learning</span></a>
@@ -111,16 +122,14 @@
         <!-- Dynamic Links based on Login -->
         <ul class="nav-links" id="navLinks">
             <li><a href="#features">Features</a></li>
-            <!-- Restricted links will be added here via JS if logged in -->
         </ul>
-
+ 
         <div class="auth-btns" id="authBtns">
-            <!-- Buttons will change via JS -->
-            <a href="Login.html" class="btn-Login">Login</a>
-            <a href="Register.html" class="btn-Register">Register Now</a>
+            <a href="Login.html" class="btn-login">Login</a>
+            <a href="Register.html" class="btn-register">Register Now</a>
         </div>
     </nav>
-
+ 
     <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-box">
@@ -132,8 +141,8 @@
             </div>
         </div>
     </section>
-
-    <!-- VALUE POINTS (FEATURE SECTION) - Description is visible to all -->
+ 
+    <!-- VALUE POINTS (FEATURE SECTION) -->
     <section class="points-section" id="features">
         <div class="sec-title reveal">
             <p>Why Choose Us?</p>
@@ -172,7 +181,7 @@
             </div>
         </div>
     </section>
-
+ 
     <!-- HOW IT WORKS -->
     <section class="how-section">
         <div class="sec-title reveal">
@@ -202,11 +211,11 @@
             </div>
         </div>
     </section>
-
+ 
     <!-- FINAL CALL TO ACTION -->
     <section class="final-cta reveal">
         <div class="cta-card">
-            <h2 style="font-size: 3rem; margin-bottom: 20px;">Ready to Level Up Your Education?</h2>
+            <h2 style="font-family: 'Playfair Display'; font-size: 3rem; margin-bottom: 20px;">Ready to Level Up Your Education?</h2>
             <p id="ctaText" style="margin-bottom: 40px; font-size: 1.2rem; opacity: 0.8;">Join 500+ students already using Rural Learning Portal.</p>
             <div class="cta-group" id="footerCta">
                 <a href="Register.html" class="main-btn btn-p">Register Account</a>
@@ -214,42 +223,57 @@
             </div>
         </div>
     </section>
-
+ 
     <footer style="padding: 50px 10%; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); color: #444;">
-        <p>© 2025 Rural Learning Portal | KLE Technological University</p>
+        <p>© 2026 Rural Learning Portal | KLE Technological University</p>
     </footer>
-
+ 
     <script>
         // --- LOGIN CHECK LOGIC ---
         function checkLoginStatus() {
-            const token = localStorage.getItem('rlt_token'); // Get token from login
-            const role = localStorage.getItem('userRole'); // student or teacher
+            const token = sessionStorage.getItem('rlt_token'); 
+            const currentUserRaw = sessionStorage.getItem('currentUser');
+            let role = null;
+            let name = "User";
+
+            if (currentUserRaw) {
+                try {
+                    const parsed = JSON.parse(currentUserRaw);
+                    role = parsed.role;
+                    name = parsed.name.split(' ')[0] || "User";
+                } catch(e) {}
+            }
+ 
             const navLinks = document.getElementById('navLinks');
             const authBtns = document.getElementById('authBtns');
             const heroCta = document.getElementById('heroCta');
             const footerCta = document.getElementById('footerCta');
+ 
+            if (token && role) {
+                // Dynamic Dashboard filename with correct casing
+                const dashPage = role === 'teacher' ? 'Dashboard-teacher.html' : 'Dashboard-student.html';
 
-            if (token) {
                 // 1. Show Restricted Links in Nav
                 navLinks.innerHTML = `
-                    <li><a href="${role === 'teacher' ? 'dashboard-teacher.html' : 'dashboard-student.html'}">Dashboard</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="${dashPage}">Dashboard</a></li>
                     <li><a href="Materials.html">Library</a></li>
                     <li><a href="Scoreboard.html">Ranking</a></li>
                     <li><a href="Chat.html">Chat</a></li>
                 `;
-
+ 
                 // 2. Change Auth Buttons to Logout
                 authBtns.innerHTML = `
-                    <span style="font-size:14px; margin-right:10px; color:var(--light-green)">Hi, User</span>
-                    <a href="#" onclick="logout()" class="btn-login" style="border-color:#ff4d4d; color:#ff4d4d">Logout</a>
+                    <span style="font-size:14px; margin-right:15px; color:var(--light-green); font-weight:700">Namaste, ${name}</span>
+                    <a href="#" onclick="logout()" class="btn-login" style="border-color:#ef4444; color:#ef4444">Logout</a>
                 `;
-
+ 
                 // 3. Update Hero Buttons
                 heroCta.innerHTML = `
-                    <a href="${role === 'teacher' ? 'dashboard-teacher.html' : 'dashboard-student.html'}" class="main-btn btn-p">Enter Dashboard</a>
+                    <a href="${dashPage}" class="main-btn btn-p">Enter Dashboard</a>
                     <a href="Materials.html" class="main-btn btn-s">View Library</a>
                 `;
-
+ 
                 // 4. Update Footer Buttons
                 footerCta.innerHTML = `
                     <a href="Materials.html" class="main-btn btn-p">Start Studying</a>
@@ -258,18 +282,18 @@
                 document.getElementById('ctaText').textContent = "Welcome back! Continue your journey to excellence.";
             }
         }
-
+ 
         function logout() {
-            localStorage.clear();
+            sessionStorage.clear();
             window.location.reload();
         }
-
+ 
         // Run check on load
         window.onload = () => {
             checkLoginStatus();
             reveal();
         };
-
+ 
         // Scroll Reveal Script
         function reveal() {
             var reveals = document.querySelectorAll(".reveal");

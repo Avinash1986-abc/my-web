@@ -4,23 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scoreboard — Rural Learning Portal</title>
-  <!-- Modern Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   
-  <!-- Link Master Scripts -->
   <script src="api.js"></script>
   <script src="main.js"></script>
 
   <style>
     :root {
-      /* --- SENIOR WHITE THEME PALETTE --- */
-      --bg-page: #ffffff;
-      --bg-side: #f8fafc;
-      --primary: #52b788;       /* Emerald Green */
-      --text-dark: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --shadow: 0 4px 20px rgba(0,0,0,0.05);
+      --primary: #52b788;
+      --primary-soft: rgba(82, 183, 136, 0.1);
+      --bg: #081c15;
+      --card: rgba(255, 255, 255, 0.04);
+      --sidebar: #0b251d;
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --border: rgba(82, 183, 136, 0.15);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      --accent: #f4a261;
       
       /* Medal Colors */
       --gold: #fbbf24;
@@ -31,22 +31,34 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Outfit', sans-serif;
-      background-color: var(--bg-page);
-      color: var(--text-dark);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      opacity: 0; /* Security Guard: Hidden until session verified */
-      transition: opacity 0.4s ease;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      overflow-y: auto;
+    }
+
+    /* background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+      pointer-events: none;
     }
 
     .layout-wrapper { display: flex; min-height: 100vh; }
 
     /* --- SIDEBAR --- */
     .sidebar {
-      width: 260px;
-      background-color: var(--bg-side);
+      width: 280px;
+      background: var(--sidebar);
       border-right: 1px solid var(--border);
-      padding: 2rem 1.5rem;
+      padding: 40px 24px;
       position: sticky;
       top: 0;
       height: 100vh;
@@ -55,33 +67,76 @@
     }
 
     .logo { 
-      font-size: 1.4rem; font-weight: 800; color: var(--text-dark); 
-      text-decoration: none; margin-bottom: 2.5rem; display: block;
+      font-family: 'Playfair Display'; 
+      font-size: 1.5rem; 
+      font-weight: 900; 
+      text-decoration: none; 
+      color: var(--text); 
+      display: block; 
+      margin-bottom: 48px; 
     }
     .logo span { color: var(--primary); }
 
-    .nav-menu { list-style: none; flex: 1; }
-    .nav-menu li { margin-bottom: 5px; }
-    .nav-menu a {
-      text-decoration: none; color: var(--text-muted);
-      padding: 12px 16px; display: flex; align-items: center;
-      gap: 12px; border-radius: 12px; font-weight: 600; transition: 0.3s;
+    .nav-menu { list-style: none; flex-grow: 1; }
+    .nav-link { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding: 14px 16px; 
+      text-decoration: none; 
+      color: var(--text-muted); 
+      border-radius: 14px; 
+      font-weight: 600; 
+      transition: 0.3s; 
+      margin-bottom: 5px; 
     }
-    .nav-menu a:hover, .nav-menu a.active {
-      background: white; color: var(--primary); box-shadow: var(--shadow);
+    .nav-link:hover, .nav-link.active { 
+      background: var(--primary-soft); 
+      color: var(--primary); 
+      box-shadow: 0 4px 20px rgba(82, 183, 136, 0.08);
+    }
+
+    .profile-footer {
+      background: var(--card); 
+      border: 1px solid var(--border);
+      padding: 12px; 
+      border-radius: 16px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+      margin-top: auto;
+    }
+    .profile-avatar { 
+      width: 36px; 
+      height: 36px; 
+      background: var(--primary); 
+      color: #081c15; 
+      border-radius: 10px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      font-size: 0.9rem; 
     }
 
     /* --- MAIN CONTENT AREA --- */
-    .main-content { flex: 1; padding: 3rem 4rem; overflow-y: auto; }
+    .main-content { 
+      flex: 1; 
+      padding: 40px 60px; 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      width: 100%; 
+      animation: fadeInUp 0.8s ease;
+    }
 
-    .header { margin-bottom: 3rem; text-align: center; }
-    .header h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
-    .header p { color: var(--text-muted); }
+    .header { margin-bottom: 40px; text-align: center; }
+    .header h1 { font-family: 'Playfair Display'; font-size: 2.5rem; font-weight: 800; margin-bottom: 8px; }
+    .header p { color: var(--text-muted); font-size: 1.1rem; }
 
     .timer-badge {
       display: inline-block;
-      background: #f0fdf4;
-      border: 1px solid var(--primary);
+      background: var(--primary-soft);
+      border: 1px solid var(--border);
       color: var(--primary);
       padding: 6px 16px;
       border-radius: 50px;
@@ -89,107 +144,171 @@
       font-weight: 800;
       margin-top: 1rem;
       text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     /* --- PODIUM DESIGN --- */
     .podium-container {
       display: grid;
-      grid-template-columns: 1fr 1.2fr 1fr;
+      grid-template-columns: 1fr 1.1fr 1fr;
       gap: 20px;
       align-items: end;
-      margin-bottom: 4rem;
+      margin-bottom: 48px;
     }
 
     .podium-card {
-      background: white;
+      background: var(--card);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 2rem 1rem;
+      padding: 32px 16px;
       text-align: center;
       box-shadow: var(--shadow);
       transition: 0.3s;
+      backdrop-filter: blur(10px);
+      position: relative;
     }
-    .podium-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+    .podium-card:hover { transform: translateY(-4px); border-color: var(--primary); }
 
     .podium-card.rank-1 {
-      padding: 3.5rem 1.5rem;
+      padding: 48px 24px;
       border-color: var(--gold);
-      background: linear-gradient(180deg, #fffcf0 0%, #ffffff 100%);
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.08);
+      background: rgba(251, 191, 36, 0.02);
+    }
+    .podium-card.rank-2 {
+      border-color: var(--silver);
+      box-shadow: 0 0 30px rgba(148, 163, 184, 0.05);
+    }
+    .podium-card.rank-3 {
+      border-color: var(--bronze);
+      box-shadow: 0 0 30px rgba(180, 83, 9, 0.05);
     }
 
-    .medal { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+    .medal { font-size: 2.5rem; margin-bottom: 12px; display: block; }
     .podium-avatar {
       width: 60px; height: 60px; border-radius: 50%;
-      background: var(--bg-side); border: 2px solid var(--border);
-      margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+      background: rgba(255, 255, 255, 0.05); border: 2px solid var(--border);
+      margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
     }
-    .rank-1 .podium-avatar { border-color: var(--gold); width: 80px; height: 80px; font-size: 2rem; }
+    .rank-1 .podium-avatar { 
+      border-color: var(--gold); 
+      width: 75px; 
+      height: 75px; 
+      font-size: 1.8rem; 
+      background: rgba(251, 191, 36, 0.1);
+      color: var(--gold);
+    }
+    .rank-2 .podium-avatar { 
+      border-color: var(--silver); 
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--silver);
+    }
+    .rank-3 .podium-avatar { 
+      border-color: var(--bronze); 
+      background: rgba(180, 83, 9, 0.1);
+      color: var(--accent);
+    }
 
-    .podium-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 4px; }
+    .podium-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 6px; }
     .podium-score { font-size: 1.8rem; font-weight: 800; color: var(--primary); }
     .podium-score span { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
 
     /* --- RANKING LIST --- */
     .rankings-box {
-      background: white;
+      background: var(--card);
       border: 1px solid var(--border);
       border-radius: 24px;
       overflow: hidden;
       box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
     }
 
     .rank-row {
       display: grid;
       grid-template-columns: 60px 50px 1fr 100px;
       align-items: center;
-      padding: 1.2rem 2rem;
+      padding: 18px 32px;
       border-bottom: 1px solid var(--border);
       transition: 0.2s;
     }
     .rank-row:last-child { border-bottom: none; }
+    .rank-row:hover {
+      background: rgba(255, 255, 255, 0.01);
+    }
 
     /* Highlight the User */
     .rank-row.is-user {
-      background: var(--bg-side);
-      border-left: 5px solid var(--primary);
+      background: rgba(82, 183, 136, 0.05);
+      border-left: 4px solid var(--primary);
     }
 
     .r-num { font-weight: 800; color: var(--text-muted); }
-    .r-avatar { width: 35px; height: 35px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; }
-    .r-name { font-weight: 700; padding-left: 10px; }
+    .r-avatar { 
+      width: 35px; 
+      height: 35px; 
+      background: rgba(255, 255, 255, 0.05); 
+      border-radius: 50%; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      font-size: 0.85rem; 
+      color: var(--text);
+    }
+    .r-name { font-weight: 700; padding-left: 12px; }
     .r-score { text-align: right; font-weight: 900; color: var(--primary); font-size: 1.1rem; }
 
     .btn-action {
-      display: block; width: fit-content; margin: 2.5rem auto 0;
-      background: var(--primary); color: white;
-      padding: 14px 32px; border-radius: 14px; text-decoration: none;
-      font-weight: 700; transition: 0.3s;
+      display: block; 
+      width: fit-content; 
+      margin: 40px auto 0;
+      background: var(--primary); 
+      color: #081c15;
+      padding: 16px 36px; 
+      border-radius: 14px; 
+      text-decoration: none;
+      font-weight: 700; 
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(82, 183, 136, 0.2);
+    }
+    .btn-action:hover {
+      background: #409a71;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(82, 183, 136, 0.3);
     }
 
-    .empty-state { text-align: center; padding: 60px; color: var(--text-muted); border: 2px dashed var(--border); border-radius: 20px; }
+    .empty-state { 
+      text-align: center; 
+      padding: 60px; 
+      color: var(--text-muted); 
+      border: 2px dashed var(--border); 
+      border-radius: 24px; 
+      background: var(--card);
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
 <div class="layout-wrapper">
-  <!-- Sidebar POINTING TO YOUR CORRECT FILENAMES -->
+  <!-- Sidebar -->
   <aside class="sidebar">
-    <a href="Dashboard-student.html" class="logo">Rural<span>Learning</span></a>
-    <ul class="nav-menu">
-      <li><a href="Dashboard-student.html">🏠 Dashboard</a></li>
-      <li><a href="Tutorials.html">📹 Video Lessons</a></li>
-      <li><a href="Assignments.html">✏️ Assignments</a></li>
-     <li><a href="Quiz.html">⏱️ Quizzes</a></li>
-      <li><a href="Materials.html">📄 Study Library</a></li>
-      <li><a href="Progress.html">📊 My Reports</a></li>
-      <li><a href="Scoreboard.html" class="active">🏆 Board</a></li>
+    <a href="#" class="logo">Rural<span>Learning</span></a>
+    <ul class="nav-menu" id="dynamic-nav">
+      <!-- Injected Dynamically Based on Role -->
     </ul>
 
-    <div style="margin-top: auto; padding: 12px; background: white; border: 1px solid var(--border); border-radius: 16px; display: flex; align-items: center; gap: 10px;">
-        <div id="footer-init" style="width: 35px; height: 35px; border-radius: 8px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800;">?</div>
+    <div class="profile-footer">
+        <div class="profile-avatar" id="footer-init">?</div>
         <div>
-            <div id="footer-name" style="font-weight:700; font-size:0.8rem;">Loading...</div>
-            <div id="footer-class" style="font-size:0.65rem; color:var(--text-muted);">fetching profile</div>
+            <div id="footer-name" style="font-weight:700; font-size:0.85rem; color: var(--text);">Loading...</div>
+            <div id="footer-class" style="font-size:0.7rem; color:var(--text-muted);">fetching profile</div>
         </div>
     </div>
   </aside>
@@ -210,59 +329,106 @@
         <section class="rankings-box" id="rankings-list"></section>
     </div>
 
-    <a href="Quiz.html" class="btn-action">Take a Quiz to Climb 🚀</a>
+    <a href="Quiz.html" class="btn-action" id="board-action-btn">Take a Quiz to Climb 🚀</a>
   </main>
 </div>
 
 <script>
-    /**
-     * SCOREBOARD ENGINE - AUTOMATED FOR MYSQL
-     */
     document.addEventListener('DOMContentLoaded', async () => {
-        // 1. Auth Guard (via api.js/main.js)
+        // 1. Auth Guard
         const user = getUser(); 
         if (!user) {
-            window.location.replace('login.html');
+            window.location.replace('Login.html');
             return;
         }
 
         // 2. Setup Profile UI
         document.getElementById('footer-name').innerText = user.name;
-        document.getElementById('footer-class').innerText = user.studentClass ? user.studentClass.toUpperCase() : "Faculty";
+        document.getElementById('footer-class').innerText = user.studentClass ? ("CLASS " + user.studentClass.toUpperCase()) : "Faculty Member";
         document.getElementById('footer-init').innerText = user.name.charAt(0).toUpperCase();
 
-        // 3. Load Board Data from MySQL
+        // Adjust Action Button for Teachers
+        const actionBtn = document.getElementById('board-action-btn');
+        if (user.role === 'teacher') {
+            actionBtn.innerText = "Manage Quizzes 📝";
+            actionBtn.href = "quiz.html";
+        }
+
+        // 3. Render Navigation Sidebar
+        renderSidebar(user);
+
+        // 4. Load Board Data from MySQL
         fetchBoardData(user.id);
 
         document.body.style.opacity = '1';
     });
 
+    // Render navigation links dynamically
+    function renderSidebar(user) {
+        const nav = document.getElementById('dynamic-nav');
+        if (!nav) return;
+
+        if (user.role === 'teacher') {
+            nav.innerHTML = `
+                <a href="Dashboard-teacher.html" class="nav-link">📊 Dashboard</a>
+                <a href="Upload-video.html" class="nav-link">🎥 Video Lectures</a>
+                <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
+                <a href="Quiz.html" class="nav-link">⏱️ Quiz Creator</a>
+                <a href="Materials.html" class="nav-link">📄 Study Notes</a>
+                <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+                <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+                <a href="Teacher-profile.html" class="nav-link">👤 My Profile</a>
+                <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
+            `;
+        } else {
+            nav.innerHTML = `
+                <a href="Dashboard-student.html" class="nav-link">🏠 Dashboard</a>
+                <a href="Tutorials.html" class="nav-link">🎥 Video Lessons</a>
+                <a href="Assignments.html" class="nav-link">✏️ Assignments</a>
+                <a href="Quiz.html" class="nav-link">⏱️ Quizzes</a>
+                <a href="Materials.html" class="nav-link">📄 Study Library</a>
+                <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+                <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+                <a href="student-profile.html" class="nav-link">👤 My Profile</a>
+                <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
+            `;
+        }
+        
+        // Mark scoreboard link as active
+        const links = nav.querySelectorAll('.nav-link');
+        links.forEach(l => {
+            if (l.getAttribute('href') === 'Scoreboard.html' || (l.getAttribute('href') === 'Quiz.html' && window.location.pathname.includes('Quiz.html'))) {
+                l.classList.add('active');
+            }
+        });
+    }
+
     async function fetchBoardData(currentUserId) {
         const podiumArea = document.getElementById('podium-area');
         const rankingList = document.getElementById('rankings-list');
 
-        /**
-         * CONNECTION POINT:
-         * const response = await AcademicAPI.getScoreboard();
-         * const students = response.data; // Array of student objects
-         */
-        const students = []; // Database result lands here
+        let students = [];
+        try {
+            const response = await AcademicAPI.getScoreboard();
+            students = response.success ? response.students : [];
+        } catch (e) {
+            console.error("Scoreboard fetch failed", e);
+        }
 
         if (!students || students.length === 0) {
             document.getElementById('scoreboard-render-zone').innerHTML = `
                 <div class="empty-state">
                     <h3>The board is empty.</h3>
-                    <p style="font-size: 0.8rem; margin-top:5px;">No scores recorded this week. Be the first to take a quiz!</p>
+                    <p style="font-size: 0.85rem; margin-top:8px;">No scores recorded this week. Be the first to take a quiz!</p>
                 </div>`;
             return;
         }
 
-        // Sort students by points descending (just in case backend didn't)
+        // Sort students by points descending
         students.sort((a, b) => b.points - a.points);
 
         // ── 1. RENDER PODIUM (Top 3) ──
         const top3 = students.slice(0, 3);
-        // Map podium to specific ranks: [2nd, 1st, 3rd] for visual layout
         const podiumLayout = [
             top3[1] ? { ...top3[1], rank: 2, medal: '🥈' } : null,
             top3[0] ? { ...top3[0], rank: 1, medal: '🥇' } : null,
@@ -284,12 +450,17 @@
             return `
                 <div class="rank-row ${isMe ? 'is-user' : ''}">
                     <span class="r-num">${index + 1}</span>
-                    <div class="r-avatar" style="${isMe ? 'background:var(--primary); color:white;' : ''}">${isMe ? 'YOU' : s.name.charAt(0)}</div>
+                    <div class="r-avatar" style="${isMe ? 'background:var(--primary); color:#081c15;' : ''}">${isMe ? 'YOU' : s.name.charAt(0)}</div>
                     <span class="r-name">${s.name}</span>
                     <span class="r-score">${s.points}</span>
                 </div>
             `;
         }).join('');
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.replace('Login.html');
     }
 </script>
 

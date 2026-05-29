@@ -166,14 +166,33 @@ const submitAssignment = async (req, res) => {
 // ══════════════════════════════════════════════════
 const deleteAssignment = async (req, res) => {
     try {
+        const assignmentId = req.params.id;
+        const teacherId = req.user.id;
+
+        // 1. Get all submissions to delete their files from disk
+        const [subs] = await db.execute(
+            'SELECT fileUrl FROM submissions WHERE assignmentId = ?',
+            [assignmentId]
+        );
+
+        for (let sub of subs) {
+            if (sub.fileUrl) {
+                const absolutePath = path.join(process.cwd(), sub.fileUrl);
+                if (fs.existsSync(absolutePath)) {
+                    fs.unlinkSync(absolutePath);
+                }
+            }
+        }
+
+        // 2. Delete the assignment from DB (Foreign Key constraints with ON DELETE CASCADE will handle DB submissions deletions)
         await db.execute(
             "DELETE FROM assignments WHERE id = ? AND teacherId = ?",
-            [req.params.id, req.user.id]
+            [assignmentId, teacherId]
         );
         res.json({ success: true });
     } catch (err) {
         console.error("❌ Assignment Delete Error:", err.message);
-        res.status(500).json({ success: false });
+        res.status(500).json({ success: false, message: err.message });
     }
 };
 

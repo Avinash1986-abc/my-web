@@ -4,260 +4,407 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Profile — Rural Learning Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Master API Engine -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   <script src="api.js"></script>
+  <script src="main.js"></script>
 
   <style>
     :root {
-      --primary: #10b981;
-      --primary-lt: #f0fdf4;
-      --text: #1e293b;
-      --muted: #64748b;
-      --bg: #f8fafc;
-      --border: #f1f5f9;
-      --red: #ef4444;
+      --primary: #52b788;
+      --primary-soft: rgba(82, 183, 136, 0.1);
+      --bg: #081c15;
+      --card: rgba(255, 255, 255, 0.04);
+      --sidebar: #0b251d;
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --border: rgba(82, 183, 136, 0.15);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      --accent: #f4a261;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text); 
+      min-height: 100vh; 
+      opacity: 0; 
+      transition: opacity 0.5s ease;
+      overflow-y: auto;
+    }
 
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
+    /* background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+      pointer-events: none;
+    }
+
+    .layout-wrapper { display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 40px 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
       display: flex;
-      opacity: 0;
-      transition: opacity 0.4s ease;
+      flex-direction: column;
     }
-
-    /* --- PROFESSIONAL SIDEBAR --- */
-    .side {
-        width: 280px;
-        background: #fff;
-        border-right: 1px solid var(--border);
-        padding: 2rem 1.5rem;
-        display: flex;
-        flex-direction: column;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-    }
-
     .logo { 
-        font-size: 1.6rem; font-weight: 800; color: #1e293b; 
-        text-decoration: none; margin-bottom: 2.5rem; display: block;
+      font-family: 'Playfair Display'; 
+      font-size: 1.5rem; 
+      font-weight: 900; 
+      text-decoration: none; 
+      color: var(--text); 
+      display: block; 
+      margin-bottom: 48px; 
     }
     .logo span { color: var(--primary); }
 
-    .nav-section-label {
-        font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-        color: #94a3b8; letter-spacing: 0.05em; margin: 1.5rem 0 0.8rem 0.8rem;
+    .nav-menu { list-style: none; flex-grow: 1; }
+    .nav-link { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding: 14px 16px; 
+      text-decoration: none; 
+      color: var(--text-muted); 
+      border-radius: 14px; 
+      font-weight: 600; 
+      transition: 0.3s; 
+      margin-bottom: 5px; 
+    }
+    .nav-link:hover, .nav-link.active { 
+      background: var(--primary-soft); 
+      color: var(--primary); 
+      box-shadow: 0 4px 20px rgba(82, 183, 136, 0.08);
     }
 
-    .nav-link {
-        display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-        text-decoration: none; color: var(--muted); font-size: 0.95rem;
-        font-weight: 600; border-radius: 12px; transition: 0.2s; margin-bottom: 4px;
+    .profile-footer {
+      background: var(--card); 
+      border: 1px solid var(--border);
+      padding: 12px; 
+      border-radius: 16px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+      margin-top: auto;
     }
-    .nav-link:hover { background: var(--bg); color: var(--text); }
-    .nav-link.on { background: var(--primary-lt); color: var(--primary); }
-    .nav-link i { font-style: normal; font-size: 1.2rem; }
-    .sign-out { margin-top: auto; color: var(--red) !important; }
-
-    /* --- MAIN CONTENT --- */
-    .main-content { flex: 1; padding: 3rem 5rem; }
-
-    .profile-header {
-      display: flex; align-items: center; gap: 25px; margin-bottom: 3rem;
+    .profile-avatar { 
+      width: 36px; 
+      height: 36px; 
+      background: var(--primary); 
+      color: #081c15; 
+      border-radius: 10px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      font-size: 0.9rem; 
     }
-    .avatar-big {
-      width: 90px; height: 90px; border-radius: 24px;
-      background: var(--primary); color: white;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.5rem; font-weight: 800;
+
+    /* CONTENT */
+    .main-content { 
+      flex: 1; 
+      padding: 40px 60px; 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      width: 100%; 
+      animation: fadeInUp 0.8s ease;
     }
-    .header-info h1 { font-size: 2rem; font-weight: 800; margin-bottom: 5px; }
-    .header-info p { color: var(--muted); font-weight: 600; }
+    
+    .profile-hero { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 32px; 
+      display: flex; 
+      align-items: center; 
+      gap: 24px; 
+      margin-bottom: 32px; 
+      box-shadow: var(--shadow); 
+      backdrop-filter: blur(10px);
+    }
+    .avatar-big { 
+      width: 80px; 
+      height: 80px; 
+      border-radius: 20px; 
+      background: var(--primary); 
+      color: #081c15; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+    }
+    .hero-info h1 { font-family: 'Playfair Display'; font-size: 2rem; margin-bottom: 4px; color: var(--text); }
 
-    .profile-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; }
-
-    .card {
-      background: white; border: 1px solid var(--border);
-      border-radius: 24px; padding: 2.5rem;
+    .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; }
+    .card { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 32px; 
+      box-shadow: var(--shadow); 
+      backdrop-filter: blur(10px);
     }
 
     .input-group { margin-bottom: 1.5rem; }
-    label { display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-    input {
-      width: 100%; background: var(--bg); border: 1.5px solid var(--border);
-      padding: 14px; border-radius: 12px; font-size: 1rem; outline: none; transition: 0.3s;
+    label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; }
+    
+    input { 
+      width: 100%; 
+      background: rgba(255, 255, 255, 0.02); 
+      border: 1.5px solid var(--border); 
+      padding: 14px; 
+      border-radius: 12px; 
+      font-size: 0.95rem; 
+      outline: none; 
+      transition: 0.3s; 
+      font-family: inherit; 
+      color: var(--text);
     }
-    input:focus { border-color: var(--primary); background: white; }
-    input:disabled { background: #f8fafc; color: #94a3b8; cursor: not-allowed; }
-
-    .btn-save {
-      background: var(--primary); color: white; padding: 14px;
-      border-radius: 12px; font-weight: 700; border: none; cursor: pointer;
-      width: 100%; font-size: 1rem; transition: 0.3s;
+    input:focus { 
+      border-color: var(--primary); 
+      background: rgba(82, 183, 136, 0.05); 
     }
-    .btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
+    input:disabled { 
+      background: rgba(255, 255, 255, 0.01); 
+      color: var(--text-muted); 
+      cursor: not-allowed; 
+      border-color: rgba(255, 255, 255, 0.05);
+    }
 
-    .achievement-item { display: flex; align-items: center; gap: 15px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .btn-save { 
+      background: var(--primary); 
+      color: #081c15; 
+      padding: 16px; 
+      border-radius: 14px; 
+      font-weight: 700; 
+      border: none; 
+      cursor: pointer; 
+      width: 100%; 
+      font-size: 1rem; 
+      transition: 0.3s; 
+      box-shadow: 0 4px 15px rgba(82, 183, 136, 0.2);
+    }
+    .btn-save:hover { 
+      background: #409a71; 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 20px rgba(82, 183, 136, 0.3);
+    }
+
+    /* REAL STATS STYLE */
+    .stat-row { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-label { font-weight: 600; color: var(--text-muted); font-size: 0.9rem; }
+    .stat-value { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Synchronized Sidebar -->
-  <aside class="side">
+<div class="layout-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
     <a href="#" class="logo">Rural<span>Learning</span></a>
-    <nav id="side-nav" style="display: contents;"></nav>
+    <nav class="nav-menu">
+      <a href="Dashboard-student.html" class="nav-link">🏠 Dashboard</a>
+      <a href="Tutorials.html" class="nav-link">🎥 Video Lessons</a>
+      <a href="Assignments.html" class="nav-link">✏️ Assignments</a>
+      <a href="Quiz.html" class="nav-link">⏱️ Quizzes</a>
+      <a href="Materials.html" class="nav-link">📄 Study Library</a>
+      <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+      
+      <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+      <a href="student-profile.html" class="nav-link active">👤 My Profile</a>
+      <a href="Progress.html" class="nav-link">📊 My Reports</a>
+      <a href="Scoreboard.html" class="nav-link">🏆 Honor Board</a>
+      <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
+    </nav>
   </aside>
 
-  <!-- Content -->
   <main class="main-content">
-    
-    <header class="profile-header">
+    <section class="profile-hero">
       <div class="avatar-big" id="hero-init">?</div>
-      <div class="header-info">
-        <h1 id="hero-name">Loading...</h1>
-        <p id="hero-meta">Fetching account details...</p>
+      <div class="hero-info">
+        <h1 id="hero-name">Student Name</h1>
+        <p id="hero-meta" style="color:var(--text-muted); font-weight:600;">Class Loading...</p>
       </div>
-    </header>
+    </section>
 
-    <div class="profile-grid">
+    <div class="grid">
       <!-- Edit Section -->
       <section class="card">
-        <h3 style="margin-bottom: 20px;">Account Settings</h3>
+        <h3 style="font-family: 'Playfair Display'; font-size: 1.4rem; margin-bottom: 24px;">Personal Information</h3>
         <form id="profile-form">
             <div class="input-group">
               <label>Full Name</label>
               <input type="text" id="p-name" required>
             </div>
             <div class="input-group">
-              <label>Email Address</label>
+              <label>Registered Email</label>
               <input type="email" id="p-email" disabled>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="input-group">
-                    <label id="role-label">Class / Subject</label>
-                    <input type="text" id="p-role-info" disabled>
+                    <label>Class / Grade</label>
+                    <input type="text" id="p-class" disabled>
                 </div>
                 <div class="input-group">
                     <label>Mobile Number</label>
-                    <input type="tel" id="p-mobile">
+                    <input type="tel" id="p-mobile" placeholder="Add mobile number">
                 </div>
             </div>
-            <button type="submit" class="btn-save" id="save-btn">Save Profile Changes</button>
+            <button type="submit" class="btn-save" id="save-btn">💾 Synchronize Profile Changes</button>
         </form>
       </section>
 
-      <!-- Sidebar Section -->
+      <!-- DATA ANALYTICS SECTION -->
       <aside>
         <section class="card" style="margin-bottom: 24px;">
-          <h3 style="margin-bottom: 15px;">Learning Achievements</h3>
-          <div class="achievement-item">
-            <div style="font-size: 1.5rem;">🌱</div>
-            <div><b>New Explorer</b><p style="font-size:0.75rem; color:var(--muted);">Joined the Rural Learning community</p></div>
+          <h3 style="font-family: 'Playfair Display'; font-size: 1.4rem; margin-bottom: 20px;">Real-Time Activity</h3>
+          <div class="stat-row">
+            <span class="stat-label">🎞️ Lectures Watched</span>
+            <span class="stat-value" id="stat-vids">0</span>
           </div>
+          <div class="stat-row">
+            <span class="stat-label">✏️ Tasks Submitted</span>
+            <span class="stat-value" id="stat-assign">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">📊 Quiz Accuracy</span>
+            <span class="stat-value" id="stat-accuracy">N/A</span>
+          </div>
+          <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 15px;">* Based on your portal history.</p>
         </section>
 
-        <section class="card" style="border-color: #fee2e2;">
-            <h3 style="margin-bottom: 10px; color: var(--red);">Security</h3>
-            <p style="font-size: 0.85rem; color: var(--muted); margin-bottom: 15px;">Securely sign out of your account.</p>
-            <button class="btn-save" style="background:var(--red);" onclick="clearSession()">Logout Account</button>
+        <section class="card" style="background: rgba(244, 162, 97, 0.05); border-color: rgba(244, 162, 97, 0.25);">
+            <h4 style="margin-bottom: 8px; color: var(--accent);">Scholar Badge</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">You are part of the Rural Learning mission to empower education through technology.</p>
         </section>
       </aside>
     </div>
-
   </main>
+</div>
 
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', async () => {
-        // 1. Get user from localStorage (Automatically saved during login/registration)
+        // 1. Auth Guard
         const user = getUser(); 
+
+        // 2. SMART SECURITY GUARD
         if (!user) {
-            window.location.replace('login.html');
+            window.location.replace('Login.html');
+            return;
+        } 
+        
+        // If a teacher accidentally opens this page, move them to the teacher profile
+        if (user.role === 'teacher') {
+            window.location.replace('Teacher-profile.html');
             return;
         }
 
-        // 2. Build Sidebar (Sync with other pages)
-        const nav = document.getElementById('side-nav');
-        if (user.role === 'teacher') {
-            nav.innerHTML = `
-                <a href="Dashboard-teacher.html" class="nav-link"><i>🏠</i> Studio Home</a>
-                <a href="Tutorials.html" class="nav-link"><i>🎥</i> Video Studio</a>
-                <a href="Assignments.html" class="nav-link"><i>📝</i> Manage Work</a>
-                <a href="Quiz.html" class="nav-link"><i>⏱️</i> Quiz Creator</a>
-                <a href="Materials.html" class="nav-link"><i>📄</i> Library Uploads</a>
-                <div class="nav-section-label">Account Settings</div>
-                <a href="student-profile.html" class="nav-link on"><i>👤</i> My Profile</a>
-                <a href="#" onclick="clearSession()" class="nav-link sign-out"><i>🚪</i> Sign Out</a>
-            `;
-            document.getElementById('role-label').innerText = "Expert Subject";
-            document.getElementById('p-role-info').value = user.expertSubject || "Faculty";
-            document.getElementById('hero-meta').innerText = "Faculty Member • Expert Teacher";
-        } else {
-            nav.innerHTML = `
-                <a href="Dashboard-student.html" class="nav-link"><i>🏠</i> Learning Path</a>
-                <a href="Tutorials.html" class="nav-link"><i>🎥</i> Video Classes</a>
-                <a href="Assignments-student.html" class="nav-link"><i>📝</i> My Assignments</a>
-                <a href="Quiz.html" class="nav-link"><i>⏱️</i> Practice Quizzes</a>
-                <a href="Materials.html" class="nav-link"><i>📄</i> Resource Library</a>
-                <div class="nav-section-label">Account Settings</div>
-                <a href="student-profile.html" class="nav-link on"><i>👤</i> My Profile</a>
-                <a href="#" onclick="clearSession()" class="nav-link sign-out"><i>🚪</i> Sign Out</a>
-            `;
-            document.getElementById('role-label').innerText = "Current Class";
-            document.getElementById('p-role-info').value = user.studentClass?.toUpperCase() || "N/A";
-            document.getElementById('hero-meta').innerText = `Student • ${user.studentClass?.toUpperCase() || 'Enrollment Active'}`;
+        // 3. PERSONALIZE UI
+        try {
+            document.getElementById('hero-name').innerText = user.name;
+            document.getElementById('hero-init').innerText = user.name.charAt(0).toUpperCase();
+            document.getElementById('hero-meta').innerText = `Enrolled Student • ${user.studentClass?.toUpperCase() || 'Class N/A'}`;
+            
+            document.getElementById('p-name').value = user.name;
+            document.getElementById('p-email').value = user.email;
+            document.getElementById('p-class').value = user.studentClass?.toUpperCase() || "";
+            document.getElementById('p-mobile').value = user.mobile || "";
+
+            // 4. FETCH FRESH DATA FROM MYSQL
+            const profileRes = await AuthAPI.getProfile();
+            if (profileRes && profileRes.success) {
+                const freshUser = profileRes.user;
+                populateUI(freshUser); // Update UI with latest DB info
+                saveUser(freshUser);    // Sync local storage
+            }
+        } catch (e) {
+            console.warn("Personalization sync skipped: using local cache.");
         }
 
-        // 3. Populate Page with Registration Data
-        document.getElementById('hero-name').innerText = user.name;
-        document.getElementById('hero-init').innerText = user.name.charAt(0).toUpperCase();
-        document.getElementById('p-name').value = user.name;
-        document.getElementById('p-email').value = user.email;
-        document.getElementById('p-mobile').value = user.mobile || "";
+        // 5. LOAD ANALYTICS
+        loadStudentAnalytics();
 
         document.body.style.opacity = '1';
     });
 
-    // 4. Update Profile Logic
-    document.getElementById('student-profile-form').onsubmit = async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('save-btn');
-        const updatedData = {
-            name: document.getElementById('p-name').value,
-            mobile: document.getElementById('p-mobile').value
-        };
+    // Helper to refresh UI elements
+    function populateUI(user) {
+        if(!user) return;
+        document.getElementById('hero-name').innerText = user.name;
+        document.getElementById('p-name').value = user.name;
+        document.getElementById('p-mobile').value = user.mobile || "";
+    }
 
-        btn.innerText = "⏳ Updating...";
-        btn.disabled = true;
-
+    async function loadStudentAnalytics() {
         try {
-            // This calls AuthAPI from your api.js
-            const res = await AuthAPI.updatestudent-profile(updatedData);
-            if(res.success) {
-                alert("✅ Profile updated successfully!");
-                // Update local storage so the UI changes immediately
-                const user = getUser();
-                user.name = updatedData.name;
-                user.mobile = updatedData.mobile;
-                saveUser(user); 
-                location.reload();
-            } else {
-                alert("❌ Update failed: " + res.message);
+            const res = await AcademicAPI.getStudentStats();
+            if (res && res.success) {
+                document.getElementById('stat-vids').innerText = res.stats.videosWatched + " / " + res.stats.videosTotal;
+                document.getElementById('stat-assign').innerText = res.stats.assignmentsDone;
+                document.getElementById('stat-accuracy').innerText = res.stats.quizAccuracy;
             }
-        } catch (err) {
-            console.error(err);
-            alert("❌ Server Error");
-        } finally {
-            btn.innerText = "Save Profile Changes";
-            btn.disabled = false;
-        }
-    };
-  </script>
+        } catch (e) { console.error("Analytics load failed"); }
+    }
+
+    // Handle Profile Update Form
+    const profileForm = document.getElementById('profile-form');
+    if (profileForm) {
+        profileForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('save-btn');
+            
+            const updatedData = {
+                name: document.getElementById('p-name').value,
+                mobile: document.getElementById('p-mobile').value,
+                expertSubject: "", 
+                email: document.getElementById('p-email').value
+            };
+
+            btn.innerText = "⏳ Saving...";
+            btn.disabled = true;
+
+            try {
+                const res = await AuthAPI.updateProfile(updatedData);
+                if(res.success) {
+                    alert("✅ Profile updated!");
+                    const currentUser = getUser();
+                    saveUser({...currentUser, ...updatedData});
+                    location.reload();
+                } else {
+                    alert("❌ " + res.message);
+                }
+            } catch (err) {
+                alert("❌ Server Connection Error");
+            } finally {
+                btn.innerText = "💾 Update Profile Info";
+                btn.disabled = false;
+            }
+        };
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.replace('Login.html');
+    }
+</script>
 </body>
 </html>

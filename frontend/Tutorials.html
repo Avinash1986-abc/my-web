@@ -4,97 +4,277 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tutorial Center — Rural Learning</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-  <!-- LOAD API ENGINE FIRST -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   <script src="api.js"></script>
+  <script src="main.js"></script>
   <style>
-    :root { 
-        --primary: #10b981; 
-        --primary-lt: #f0fdf4;
-        --text: #1e293b; 
-        --muted: #64748b;
-        --bg: #f8fafc; 
-        --border: #f1f5f9; 
-        --red: #ef4444;
+    :root {
+      --primary: #52b788;
+      --primary-soft: rgba(82, 183, 136, 0.1);
+      --bg: #081c15;
+      --card: rgba(255, 255, 255, 0.04);
+      --sidebar: #0b251d;
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --border: rgba(82, 183, 136, 0.15);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      --accent: #f4a261;
+      --red: #ef4444;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; opacity: 0; transition: opacity 0.4s; }
     
-    /* --- PROFESSIONAL SIDEBAR --- */
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text); 
+      display: flex; 
+      min-height: 100vh; 
+      opacity: 0; 
+      transition: opacity 0.5s ease; 
+    }
+
+    /* background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    
+    /* --- SIDEBAR --- */
     .sidebar { 
         width: 280px; 
-        background: #fff; 
+        background: var(--sidebar); 
         border-right: 1px solid var(--border); 
-        padding: 2rem 1.5rem; 
+        padding: 40px 24px; 
         display: flex;
         flex-direction: column;
         position: sticky; 
         top: 0; 
         height: 100vh; 
+        flex-shrink: 0;
     }
 
     .logo { 
-        font-size: 1.6rem; 
-        font-weight: 800; 
-        color: #1e293b; 
-        margin-bottom: 2.5rem; 
+        font-family: 'Playfair Display'; 
+        font-size: 1.5rem; 
+        font-weight: 900; 
         text-decoration: none; 
+        color: var(--text); 
         display: block; 
+        margin-bottom: 48px; 
     }
     .logo span { color: var(--primary); }
 
-    .nav-section-label {
-        font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
-        color: #94a3b8; letter-spacing: 0.05em; margin: 1.5rem 0 0.8rem 0.8rem;
+    .nav-menu { list-style: none; flex-grow: 1; }
+    .nav-link { 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        padding: 14px 16px; 
+        text-decoration: none; 
+        color: var(--text-muted); 
+        border-radius: 14px; 
+        font-weight: 600; 
+        transition: 0.3s; 
+        margin-bottom: 5px; 
+    }
+    .nav-link:hover, .nav-link.active { 
+        background: var(--primary-soft); 
+        color: var(--primary); 
+        box-shadow: 0 4px 20px rgba(82, 183, 136, 0.08);
     }
 
-    .nav-link { 
-        display: flex; align-items: center; gap: 12px; padding: 12px 16px; 
-        text-decoration: none; color: var(--muted); border-radius: 12px; 
-        font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; transition: 0.2s;
+    .profile-footer {
+      background: var(--card); 
+      border: 1px solid var(--border);
+      padding: 12px; 
+      border-radius: 16px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+      margin-top: auto;
     }
-    .nav-link:hover { background: var(--bg); color: var(--text); }
-    .nav-link.on { background: var(--primary-lt); color: var(--primary); }
-    .nav-link i { font-style: normal; font-size: 1.2rem; }
-    .sign-out { margin-top: auto; color: var(--red) !important; }
+    .profile-avatar { 
+      width: 36px; 
+      height: 36px; 
+      background: var(--primary); 
+      color: #081c15; 
+      border-radius: 10px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      font-size: 0.9rem; 
+    }
 
     /* --- MAIN CONTENT --- */
-    .main-content { flex: 1; padding: 40px 60px; max-width: 1200px; }
+    .main-content { 
+      flex: 1; 
+      padding: 40px 60px; 
+      max-width: 1100px; 
+      margin: 0 auto; 
+      width: 100%;
+      animation: fadeInUp 0.8s ease;
+    }
 
     /* Search Bar */
-    .search-wrapper { display: flex; max-width: 700px; margin: 0 auto 50px; gap: 10px; }
-    .search-input { flex: 1; padding: 15px 25px; border-radius: 50px; border: 1.5px solid var(--border); outline: none; font-size: 1rem; transition: 0.3s; }
-    .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.05); }
-    .btn-search { background: var(--primary); color: white; border: none; padding: 0 30px; border-radius: 50px; font-weight: 700; cursor: pointer; }
+    .search-wrapper { display: flex; max-width: 650px; margin: 0 auto 40px; gap: 12px; }
+    .search-input { 
+      flex: 1; 
+      padding: 14px 24px; 
+      border-radius: 50px; 
+      border: 1.5px solid var(--border); 
+      outline: none; 
+      font-size: 1rem; 
+      transition: 0.3s; 
+      background: var(--card);
+      color: var(--text);
+    }
+    .search-input:focus { 
+      border-color: var(--primary); 
+      background: rgba(82, 183, 136, 0.05); 
+    }
+    .search-input::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+    .btn-search { 
+      background: var(--primary); 
+      color: #081c15; 
+      border: none; 
+      padding: 0 32px; 
+      border-radius: 50px; 
+      font-weight: 700; 
+      cursor: pointer; 
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(82, 183, 136, 0.2);
+    }
+    .btn-search:hover {
+      background: #409a71;
+      transform: translateY(-2px);
+    }
 
     /* Video Cards */
-    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
-    .v-card { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); transition: 0.3s; cursor: pointer; }
-    .v-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-    .v-thumb { aspect-ratio: 16/9; background: #0f172a; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: #fff; }
+    .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    .v-card { 
+      background: var(--card); 
+      border-radius: 24px; 
+      overflow: hidden; 
+      border: 1px solid var(--border); 
+      transition: 0.3s; 
+      cursor: pointer; 
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .v-card:hover { 
+      transform: translateY(-5px); 
+      border-color: var(--primary); 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+    }
+    .v-thumb { 
+      aspect-ratio: 16/9; 
+      background: #0b251d; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 3rem; 
+      color: var(--primary); 
+      border-bottom: 1px solid var(--border);
+    }
     .v-body { padding: 20px; }
-    .v-sub { font-size: 0.65rem; font-weight: 800; color: var(--primary); text-transform: uppercase; display: block; margin-bottom: 5px; }
-    .v-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; color: var(--text); }
-    .v-teacher { font-size: 0.8rem; color: var(--muted); }
+    .v-sub { 
+      font-size: 0.7rem; 
+      font-weight: 800; 
+      color: var(--accent); 
+      text-transform: uppercase; 
+      display: block; 
+      margin-bottom: 6px; 
+      letter-spacing: 0.5px;
+    }
+    .v-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 8px; color: var(--text); line-height: 1.4; }
+    .v-teacher { font-size: 0.8rem; color: var(--text-muted); }
 
-    /* Teacher Studio */
-    .studio-box { background: #fff; padding: 30px; border-radius: 24px; border: 1px solid var(--border); margin-bottom: 40px; }
-    input[type="text"], input[type="file"] { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 15px; font-family: inherit; }
-    .btn-pub { width: 100%; padding: 16px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+    /* Teacher Studio Form */
+    .studio-box { 
+      background: var(--card); 
+      padding: 32px; 
+      border-radius: 24px; 
+      border: 1px solid var(--border); 
+      margin-bottom: 40px; 
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    input[type="text"], input[type="file"] { 
+      width: 100%; 
+      padding: 12px 16px; 
+      border-radius: 12px; 
+      border: 1px solid var(--border); 
+      margin-bottom: 16px; 
+      font-family: inherit; 
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      outline: none;
+      transition: 0.3s;
+    }
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      background: rgba(82, 183, 136, 0.05);
+    }
+    .btn-pub { 
+      width: 100%; 
+      padding: 16px; 
+      background: var(--primary); 
+      color: #081c15; 
+      border: none; 
+      border-radius: 12px; 
+      font-weight: 800; 
+      cursor: pointer; 
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(82, 183, 136, 0.2);
+    }
+    .btn-pub:hover {
+      background: #409a71;
+      transform: translateY(-2px);
+    }
     
-    .v-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid var(--border); }
-    .v-table th { text-align: left; padding: 15px 20px; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-    .v-table td { padding: 15px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    .v-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      background: var(--card); 
+      border-radius: 24px; 
+      overflow: hidden; 
+      border: 1px solid var(--border); 
+      box-shadow: var(--shadow);
+    }
+    .v-table th { text-align: left; padding: 18px 24px; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
+    .v-table td { padding: 18px 24px; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text); }
+    .v-table tr:last-child td { border-bottom: none; }
     
     #teacher-view, #student-view { display: none; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   <aside class="sidebar">
     <a href="#" class="logo">Rural<span>Learning</span></a>
-    <nav id="side-nav" style="display: contents;"></nav>
+    <ul class="nav-menu" id="side-nav">
+      <!-- Injected Dynamically Based on Role -->
+    </ul>
+    <div class="profile-footer">
+        <div class="profile-avatar" id="footer-init">?</div>
+        <div>
+            <div id="footer-name" style="font-weight:700; font-size:0.85rem; color: var(--text);">Loading...</div>
+            <div id="footer-class" style="font-size:0.7rem; color:var(--text-muted);">fetching profile</div>
+        </div>
+    </div>
   </aside>
 
   <main class="main-content">
@@ -112,20 +292,20 @@
     <div id="teacher-view">
         <h1 style="font-family:'Playfair Display'; font-size:2.4rem; margin-bottom:10px;">Video Studio</h1>
         <div class="studio-box">
-            <h3 style="margin-bottom: 20px;">Publish New Lecture</h3>
+            <h3 style="font-family:'Playfair Display'; font-size:1.3rem; margin-bottom: 20px;">Publish New Lecture</h3>
             <form id="upload-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                 <div>
                     <input type="text" id="v-title" placeholder="Lecture Title" required>
                     <input type="text" id="v-subject" placeholder="Subject (e.g. Science)" required>
                     <input type="text" id="v-class" placeholder="Target Class (e.g. 10th)" required>
                 </div>
-                <div style="border: 2px dashed var(--border); border-radius: 15px; padding: 20px; text-align: center;">
+                <div style="border: 2px dashed var(--border); border-radius: 15px; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; gap: 15px;">
                     <input type="file" id="file-input" accept="video/mp4" required>
                     <button type="submit" class="btn-pub" id="pub-btn">🚀 PUBLISH VIDEO</button>
                 </div>
             </form>
         </div>
-        <h3 style="margin-bottom:15px;">My Uploaded Lectures</h3>
+        <h3 style="font-family:'Playfair Display'; font-size:1.4rem; margin-bottom:15px;">My Uploaded Lectures</h3>
         <table class="v-table">
             <thead><tr><th>Title</th><th>Subject</th><th>Class</th><th>Action</th></tr></thead>
             <tbody id="teacher-rows"></tbody>
@@ -138,33 +318,42 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
         const user = getUser();
-        if (!user) return window.location.replace('login.html');
+        if (!user) return window.location.replace('Login.html');
+
+        // Setup profile UI
+        document.getElementById('footer-name').innerText = user.name;
+        document.getElementById('footer-class').innerText = user.studentClass ? ("CLASS " + user.studentClass.toUpperCase()) : "Faculty Member";
+        document.getElementById('footer-init').innerText = user.name.charAt(0).toUpperCase();
 
         // BUILD DYNAMIC SIDEBAR
         const nav = document.getElementById('side-nav');
         if (user.role === 'teacher') {
             nav.innerHTML = `
-                <a href="Dashboard-teacher.html" class="nav-link"><i>🏠</i> Studio Home</a>
-                <a href="Tutorials.html" class="nav-link on"><i>🎥</i> Video Studio</a>
-                <a href="Assignments.html" class="nav-link"><i>📝</i> Manage Work</a>
-                <a href="Quiz.html" class="nav-link"><i>⏱️</i> Quiz Creator</a>
-                <a href="Materials.html" class="nav-link"><i>📄</i>  Study Library</a>
-                <div class="nav-section-label">Account Settings</div>
-                <a href="student-profile.html" class="nav-link"><i>👤</i> My Profile</a>
-                <a href="#" onclick="clearSession()" class="nav-link sign-out"><i>🚪</i> Sign Out</a>
+                <a href="Dashboard-teacher.html" class="nav-link">📊 Dashboard</a>
+                <a href="Upload-video.html" class="nav-link active">🎥 Video Lectures</a>
+                <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
+                <a href="Quiz.html" class="nav-link">⏱️ Quiz Creator</a>
+                <a href="Materials.html" class="nav-link">📄 Study Notes</a>
+                <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+                <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+                <a href="Teacher-profile.html" class="nav-link">👤 My Profile</a>
+                <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
             `;
             document.getElementById('teacher-view').style.display = 'block';
             loadTeacherVideos();
         } else {
             nav.innerHTML = `
-                <a href="Dashboard-student.html" class="nav-link"><i>🏠</i> Dashboard</a>
-                <a href="Tutorials.html" class="nav-link on"><i>🎥</i> Video Classes</a>
-                <a href="Assignments-student.html" class="nav-link"><i>📝</i> Assignments</a>
-                <a href="Quiz.html" class="nav-link"><i>⏱️</i> Quizzes</a>
-                <a href="Materials.html" class="nav-link"><i>📄</i>  Study Library</a>
-                <div class="nav-section-label">Account Settings</div>
-                <a href="student-profile.html" class="nav-link"><i>👤</i> My Profile</a>
-                <a href="#" onclick="clearSession()" class="nav-link sign-out"><i>🚪</i> Sign Out</a>
+                <a href="Dashboard-student.html" class="nav-link">🏠 Dashboard</a>
+                <a href="Tutorials.html" class="nav-link active">🎥 Video Lessons</a>
+                <a href="Assignments-student.html" class="nav-link">✏️ Assignments</a>
+                <a href="Quiz.html" class="nav-link">⏱️ Quizzes</a>
+                <a href="Materials.html" class="nav-link">📄 Study Library</a>
+                <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+                <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+                <a href="student-profile.html" class="nav-link">👤 My Profile</a>
+                <a href="Progress.html" class="nav-link">📊 My Reports</a>
+                <a href="Scoreboard.html" class="nav-link">🏆 Honor Board</a>
+                <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
             `;
             document.getElementById('student-view').style.display = 'block';
             loadStudentLibrary();
@@ -175,7 +364,6 @@
         document.body.style.opacity = '1';
     });
 
-    // ── SEARCH LOGIC ──
     function performSearch() {
         const q = document.getElementById('v-search').value.toLowerCase();
         const filtered = allVideos.filter(v => 
@@ -184,7 +372,6 @@
         renderGrid(filtered);
     }
 
-    // ── STUDENT: LOAD VIDEOS ──
     async function loadStudentLibrary() {
         const res = await ContentAPI.getVideos();
         allVideos = Array.isArray(res) ? res : (res.videos || []);
@@ -194,7 +381,7 @@
     function renderGrid(list) {
         const container = document.getElementById('student-grid');
         if (!list || list.length === 0) {
-            container.innerHTML = '<div style="padding:40px; color:#64748b;">No lessons found matching your search.</div>';
+            container.innerHTML = '<div style="padding:40px; color:var(--text-muted);">No lessons found matching your search.</div>';
             return;
         }
 
@@ -219,7 +406,6 @@
         window.location.href = `watch.html?url=${url}&title=${title}`;
     }
 
-    // ── TEACHER: LOAD VIDEOS ──
     async function loadTeacherVideos() {
         const res = await ContentAPI.getVideos();
         const videos = Array.isArray(res) ? res : (res.videos || []);
@@ -238,21 +424,37 @@
     document.getElementById('upload-form').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('pub-btn');
+        const fileInput = document.getElementById('file-input');
+        
+        if (!fileInput.files[0]) {
+            alert("❌ Error: No file selected!");
+            return;
+        }
+
         const formData = new FormData();
-        formData.append('video', document.getElementById('file-input').files[0]);
+        formData.append('video', fileInput.files[0]);
         formData.append('title', document.getElementById('v-title').value);
         formData.append('subject', document.getElementById('v-subject').value);
         formData.append('targetClass', document.getElementById('v-class').value);
 
-        btn.innerText = "⏳ Uploading to Studio...";
-        btn.disabled = true;
+        try {
+            btn.innerText = "⏳ Uploading...";
+            btn.disabled = true;
 
-        const res = await ContentAPI.uploadVideo(formData);
-        if (res.success) {
-            alert("✅ Video published successfully!");
-            location.reload();
-        } else {
-            alert("❌ Upload failed: " + res.message);
+            const res = await ContentAPI.uploadVideo(formData, (prog) => {
+                btn.innerText = `⏳ ${prog}%`;
+            });
+
+            if (res.success) {
+                alert("✅ SUCCESS: Lecture published!");
+                location.reload();
+            } else {
+                alert("❌ BACKEND ERROR: " + res.message);
+            }
+        } catch (err) {
+            console.error("❌ CRASH DURING UPLOAD:", err);
+            alert("❌ CRITICAL ERROR: Check Browser Console!");
+        } finally {
             btn.innerText = "🚀 PUBLISH VIDEO";
             btn.disabled = false;
         }
@@ -263,6 +465,11 @@
             const res = await ContentAPI.deleteVideo(id);
             if(res.success) loadTeacherVideos();
         }
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.replace('Login.html');
     }
 </script>
 </body>

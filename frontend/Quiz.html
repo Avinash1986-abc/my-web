@@ -3,109 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <title>Quiz Studio — Rural Learning</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
     <script src="api.js"></script>
+    <script src="main.js"></script>
     <style>
         :root {
-            --primary: #10b981;
-            --primary-lt: #f0fdf4;
-            --text: #1e293b;
-            --muted: #64748b;
-            --bg: #f8fafc;
-            --border: #f1f5f9;
+            --primary: #52b788;
+            --primary-soft: rgba(82, 183, 136, 0.1);
+            --bg: #081c15;
+            --card: rgba(255, 255, 255, 0.04);
+            --sidebar: #0b251d;
+            --text: #ffffff;
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --border: rgba(82, 183, 136, 0.15);
+            --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            --accent: #f4a261;
             --red: #ef4444;
-            --ink: #111827;
+            --red-soft: rgba(239, 68, 68, 0.15);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'DM Sans', sans-serif; }
-        body { background: var(--bg); color: var(--text); opacity: 0; transition: opacity 0.4s; display: flex; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg); 
+            color: var(--text); 
+            min-height: 100vh;
+            opacity: 0; 
+            transition: opacity 0.5s ease;
+            overflow-y: auto; 
+        }
+
+        /* background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                              radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+            pointer-events: none;
+        }
         
         .wrap { display: flex; width: 100%; min-height: 100vh; }
 
         /* --- SIDEBAR --- */
-        .side {
-            width: 280px; background: #fff; border-right: 1px solid var(--border);
-            padding: 2rem 1.5rem; display: flex; flex-direction: column;
-            position: sticky; top: 0; height: 100vh; flex-shrink: 0;
+        .sidebar {
+            width: 280px; 
+            background: var(--sidebar); 
+            border-right: 1px solid var(--border);
+            padding: 40px 24px; 
+            position: sticky; 
+            top: 0; 
+            height: 100vh; 
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
         }
-        .logo { font-size: 1.6rem; font-weight: 800; color: #1e293b; margin-bottom: 2.5rem; text-decoration: none; }
+        .logo { 
+            font-family: 'Playfair Display'; 
+            font-size: 1.5rem; 
+            font-weight: 900; 
+            text-decoration: none; 
+            color: var(--text); 
+            display: block; 
+            margin-bottom: 48px; 
+        }
         .logo span { color: var(--primary); }
-        .nav-section-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 0.05em; margin: 1.5rem 0 0.8rem 0.8rem; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--muted); font-size: 0.95rem; font-weight: 600; border-radius: 12px; transition: 0.2s; margin-bottom: 4px; }
-        .nav-link:hover { background: var(--bg); color: var(--text); }
-        .nav-link.on { background: var(--primary-lt); color: var(--primary); }
-        .nav-link i { font-style: normal; font-size: 1.2rem; }
-        .sign-out { margin-top: auto; color: var(--red) !important; }
+
+        .nav-menu { list-style: none; flex-grow: 1; }
+        .nav-link { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 14px 16px; 
+            text-decoration: none; 
+            color: var(--text-muted); 
+            border-radius: 14px; 
+            font-weight: 600; 
+            transition: 0.3s; 
+            margin-bottom: 5px; 
+        }
+        .nav-link:hover, .nav-link.active { 
+            background: var(--primary-soft); 
+            color: var(--primary); 
+            box-shadow: 0 4px 20px rgba(82, 183, 136, 0.08);
+        }
+
+        .profile-footer {
+            background: var(--card); 
+            border: 1px solid var(--border);
+            padding: 12px; 
+            border-radius: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            margin-top: auto;
+        }
+        .profile-avatar { 
+            width: 36px; 
+            height: 36px; 
+            background: var(--primary); 
+            color: #081c15; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 800; 
+            font-size: 0.9rem; 
+        }
 
         /* --- CONTENT --- */
-        .main { flex: 1; padding: 3rem; max-width: 1100px; margin: 0 auto; }
+        .main { 
+            flex: 1; 
+            padding: 40px 60px; 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            width: 100%;
+            animation: fadeInUp 0.8s ease;
+        }
         #teacher-view, #student-view, #quiz-player-view, #quiz-result-view { display: none; }
 
-        .card { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 2rem; margin-bottom: 2rem; }
+        .card { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 24px; 
+            padding: 32px; 
+            margin-bottom: 32px; 
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .fg { margin-bottom: 1.2rem; }
-        label { display: block; font-size: .7rem; font-weight: 800; margin-bottom: 6px; text-transform: uppercase; color: var(--muted); }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: #fcfcfc; font-family: inherit; }
+        label { display: block; font-size: 0.7rem; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
         
-        .btn { padding: 12px 25px; border-radius: 10px; font-weight: 700; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-ink { background: var(--ink); color: white; }
-        .btn-danger { background: #fee2e2; color: var(--red); font-size: 0.8rem; }
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            background: rgba(255,255,255,0.02); 
+            font-family: inherit; 
+            color: var(--text);
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background: rgba(82, 183, 136, 0.05);
+        }
+        select option {
+            background: var(--sidebar);
+            color: var(--text);
+        }
+        
+        .btn { 
+            padding: 12px 24px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border: none; 
+            transition: 0.3s; 
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+        .btn-primary { 
+            background: var(--primary); 
+            color: #081c15; 
+            box-shadow: 0 4px 15px rgba(82, 183, 136, 0.2);
+        }
+        .btn-primary:hover {
+            background: #409a71;
+            transform: translateY(-2px);
+        }
+        .btn-ink { 
+            background: rgba(255, 255, 255, 0.05); 
+            color: var(--text); 
+            border: 1px solid var(--border);
+        }
+        .btn-ink:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn-danger { 
+            background: var(--red-soft); 
+            color: var(--red); 
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            font-size: 0.85rem; 
+        }
+        .btn-danger:hover {
+            background: var(--red);
+            color: white;
+        }
 
         /* --- TABLE STYLE --- */
-        .q-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; border-radius: 15px; overflow: hidden; border: 1px solid var(--border); }
-        .q-table th { text-align: left; padding: 15px; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; border-bottom: 1px solid var(--border); }
-        .q-table td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-        .view-q-panel { display: none; background: #fafafa; padding: 15px; border-radius: 10px; margin-top: 10px; font-size: 0.85rem; border: 1px solid var(--border); }
+        .q-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
+            background: var(--card); 
+            border-radius: 20px; 
+            overflow: hidden; 
+            border: 1px solid var(--border); 
+            box-shadow: var(--shadow);
+        }
+        .q-table th { text-align: left; padding: 18px 24px; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
+        .q-table td { padding: 18px 24px; border-bottom: 1px solid var(--border); font-size: 0.9rem; color: var(--text); }
+        .q-table tr:last-child td { border-bottom: none; }
         
-        .tag { background: var(--primary-lt); color: var(--primary); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
-        .timer { font-size: 1.5rem; font-weight: 700; color: var(--red); }
-        .option-btn { width: 100%; padding: 1.2rem; border: 2px solid var(--border); border-radius: 12px; background: white; cursor: pointer; text-align: left; margin-bottom: 10px; }
-        .option-btn.selected { border-color: var(--primary); background: var(--primary-lt); font-weight: 700; }
+        .view-q-panel { 
+            display: none; 
+            background: rgba(255, 255, 255, 0.01); 
+            padding: 20px; 
+            border-radius: 12px; 
+            margin-top: 15px; 
+            font-size: 0.85rem; 
+            border: 1px solid var(--border); 
+        }
+        
+        .tag { 
+            background: var(--primary-soft); 
+            color: var(--primary); 
+            padding: 4px 12px; 
+            border-radius: 6px; 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            border: 1px solid rgba(82, 183, 136, 0.15);
+        }
+        .timer { font-size: 1.6rem; font-weight: 800; color: var(--accent); text-shadow: 0 0 10px rgba(244, 162, 97, 0.2); }
+        
+        .option-btn { 
+            width: 100%; 
+            padding: 18px 24px; 
+            border: 1.5px solid var(--border); 
+            border-radius: 16px; 
+            background: rgba(255, 255, 255, 0.02); 
+            cursor: pointer; 
+            text-align: left; 
+            margin-bottom: 12px; 
+            font-size: 0.95rem;
+            color: var(--text);
+            transition: 0.3s;
+            font-family: inherit;
+        }
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: rgba(82, 183, 136, 0.03);
+        }
+        .option-btn.selected { 
+            border-color: var(--primary); 
+            background: var(--primary-soft); 
+            font-weight: 700; 
+            box-shadow: 0 0 15px rgba(82, 183, 136, 0.1);
+        }
+
+        .empty-state { 
+            text-align: center; 
+            padding: 60px; 
+            color: var(--text-muted); 
+            border: 2px dashed var(--border); 
+            border-radius: 24px; 
+            background: var(--card);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
 <div class="wrap">
-    <aside class="side">
+    <!-- Sidebar -->
+    <aside class="sidebar">
         <a href="#" class="logo">Rural<span>Learning</span></a>
-        <nav id="side-nav" style="display: contents;"></nav>
+        <ul class="nav-menu" id="side-nav">
+          <!-- Injected Dynamically Based on Role -->
+        </ul>
+        <div class="profile-footer">
+            <div class="profile-avatar" id="footer-init">?</div>
+            <div>
+                <div id="footer-name" style="font-weight:700; font-size:0.85rem; color: var(--text);">Loading...</div>
+                <div id="footer-class" style="font-size:0.7rem; color:var(--text-muted);">fetching profile</div>
+            </div>
+        </div>
     </aside>
 
     <main class="main">
         <!-- TEACHER: CREATE & MANAGE -->
         <div id="teacher-view">
-            <h1 style="margin-bottom:2rem;">Quiz Studio</h1>
+            <h1 style="font-family:'Playfair Display'; font-size:2.2rem; margin-bottom:2rem;">Quiz Studio</h1>
             
-            <!-- STEP 1 & 2 FORM (KEEPING YOUR DESIGN) -->
             <div class="card">
-                <div style="font-weight:700; margin-bottom:1.5rem;">Create New Quiz</div>
+                <div style="font-family:'Playfair Display'; font-size:1.3rem; font-weight:700; margin-bottom:1.5rem;">Create New Quiz</div>
                 <div class="form-grid">
                     <div class="fg"><label>Quiz Title</label><input id="qTitle" type="text" placeholder="Science Mock Test"></div>
                     <div class="fg"><label>Subject</label><input id="qSubject" type="text" placeholder="Biology"></div>
                     <div class="fg"><label>Duration (Mins)</label><input id="qDuration" type="number" value="15"></div>
                     <div class="fg"><label>Target Class</label><input id="qClass" type="text" placeholder="10th Std"></div>
                 </div>
-                <div style="border-top: 1px solid #eee; padding-top: 20px;">
-                    <label>Question Text</label>
-                    <textarea id="currQ" rows="2" placeholder="Enter your question here..."></textarea>
+                <div style="border-top: 1px solid var(--border); padding-top: 24px; margin-top: 12px;">
+                    <div style="font-family:'Playfair Display'; font-size:1.1rem; font-weight:700; margin-bottom:15px;">Add Questions</div>
+                    <div class="fg">
+                        <label>Question Text</label>
+                        <textarea id="currQ" rows="2" placeholder="Enter your question here..."></textarea>
+                    </div>
                     <div class="form-grid" style="margin-top:15px;">
                         <input id="optA" type="text" placeholder="Option A">
                         <input id="optB" type="text" placeholder="Option B">
                         <input id="optC" type="text" placeholder="Option C">
                         <input id="optD" type="text" placeholder="Option D">
                     </div>
-                    <div style="display:flex; gap:15px; align-items:center; margin-top:15px;">
+                    <div style="display:flex; gap:15px; align-items:center; margin-top:20px;">
                         <select id="correctAns" style="width:200px;"><option value="A">Answer: A</option><option value="B">Answer: B</option><option value="C">Answer: C</option><option value="D">Answer: D</option></select>
                         <button class="btn btn-ink" onclick="addQuestionToList()">+ Add Question</button>
                     </div>
-                    <div id="temp-list" style="margin-top:15px;"></div>
-                    <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:15px;" onclick="handlePublishQuiz()">🚀 PUBLISH FULL QUIZ</button>
+                    <div id="temp-list" style="margin-top:20px; display: flex; flex-direction: column; gap: 8px;"></div>
+                    <button class="btn btn-primary" style="width:100%; margin-top:32px; padding:16px;" onclick="handlePublishQuiz()">🚀 PUBLISH FULL QUIZ</button>
                 </div>
             </div>
 
             <!-- PUBLISHED LIST SECTION -->
-            <h3 style="margin-bottom:15px;">My Published Quizzes</h3>
+            <h3 style="font-family:'Playfair Display'; font-size:1.4rem; margin-bottom:15px;">My Published Quizzes</h3>
             <table class="q-table">
                 <thead><tr><th>Quiz Title</th><th>Subject</th><th>Questions</th><th>Actions</th></tr></thead>
                 <tbody id="teacher-quiz-rows"></tbody>
@@ -114,28 +333,28 @@
 
         <!-- STUDENT: PRACTICE LIST -->
         <div id="student-view">
-            <h1 style="margin-bottom:2rem;">Practice Quizzes</h1>
-            <div id="quiz-container"></div>
+            <h1 style="font-family:'Playfair Display'; font-size:2.2rem; margin-bottom:2rem;">Practice Quizzes</h1>
+            <div id="quiz-container" style="display: flex; flex-direction: column; gap: 16px;"></div>
         </div>
 
-        <!-- PLAYER & RESULTS (MODES REMAINS SAME) -->
+        <!-- PLAYER & RESULTS -->
         <div id="quiz-player-view">
-            <div style="display:flex; justify-content:space-between; margin-bottom:2rem;">
-                <h2 id="p-title"></h2>
+            <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom:2rem;">
+                <h2 id="p-title" style="font-family:'Playfair Display';"></h2>
                 <div class="timer" id="timer-display">00:00</div>
             </div>
             <div id="question-area"></div>
             <div style="display:flex; justify-content:space-between; margin-top:20px;">
-                <button class="btn" style="background:#e2e8f0;" id="prev-btn" onclick="moveQuestion(-1)">← Previous</button>
+                <button class="btn btn-ink" id="prev-btn" onclick="moveQuestion(-1)">← Previous</button>
                 <button class="btn btn-primary" id="next-btn" onclick="moveQuestion(1)">Next →</button>
             </div>
-            <button class="btn btn-ink" id="submit-btn" style="width:100%; margin-top:20px; display:none;" onclick="handleQuizSubmission()">✅ Submit Final Answers</button>
+            <button class="btn btn-primary" id="submit-btn" style="width:100%; margin-top:24px; display:none;" onclick="handleQuizSubmission()">✅ Submit Final Answers</button>
         </div>
 
         <div id="quiz-result-view" style="text-align:center; padding: 4rem 0;">
-            <div style="font-size:3rem; font-weight:800; color:var(--primary);" id="res-pct">0%</div>
-            <h1 id="res-title" style="margin:10px 0;"></h1>
-            <p id="res-desc" style="color:var(--muted); margin-bottom:2rem;"></p>
+            <div style="font-size:4rem; font-weight:800; color:var(--primary); text-shadow: 0 0 20px rgba(82, 183, 136, 0.15);" id="res-pct">0%</div>
+            <h1 id="res-title" style="font-family:'Playfair Display'; font-size: 2rem; margin:15px 0;"></h1>
+            <p id="res-desc" style="color:var(--text-muted); margin-bottom:2rem; font-size:1.1rem;"></p>
             <button class="btn btn-primary" onclick="location.reload()">Back to Home</button>
         </div>
     </main>
@@ -151,34 +370,42 @@ let tempQuestions = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     const user = getUser();
-    if (!user) return window.location.replace('login.html');
+    if (!user) return window.location.replace('Login.html');
+
+    // Setup profile UI
+    document.getElementById('footer-name').innerText = user.name;
+    document.getElementById('footer-class').innerText = user.studentClass ? ("CLASS " + user.studentClass.toUpperCase()) : "Faculty Member";
+    document.getElementById('footer-init').innerText = user.name.charAt(0).toUpperCase();
 
     const nav = document.getElementById('side-nav');
-    const sideLinks = `
-        <div class="nav-section-label">Account Settings</div>
-        <a href="student-profile.html" class="nav-link"><i>👤</i> My Profile</a>
-
-    `;
 
     if (user.role === 'teacher') {
         nav.innerHTML = `
-            <a href="Dashboard-teacher.html" class="nav-link"><i> 📊  Dashboard</a>
-            <a href="Tutorials.html" class="nav-link"><i>🎥</i>  Video Lectures</a>
-            <a href="Assignments.html" class="nav-link"><i>📝</i> Student Tasks</a>
-            <a href="Quiz.html" class="nav-link on"><i>⏱️</i> Quiz Creator</a>
-            <a href="Materials.html" class="nav-link"><i></i>📄  Study Notes</a>
-            ${sideLinks}
+            <a href="Dashboard-teacher.html" class="nav-link">📊 Dashboard</a>
+            <a href="Upload-video.html" class="nav-link">🎥 Video Lectures</a>
+            <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
+            <a href="Quiz.html" class="nav-link active">⏱️ Quiz Creator</a>
+            <a href="Materials.html" class="nav-link">📄 Study Notes</a>
+            <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+            <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+            <a href="Teacher-profile.html" class="nav-link">👤 My Profile</a>
+            <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
         `;
         document.getElementById('teacher-view').style.display = 'block';
         loadTeacherDashboard();
     } else {
         nav.innerHTML = `
-            <a href="Dashboard-student.html" class="nav-link"><i>📊  Dashboard</a>
-            <a href="Tutorials.html" class="nav-link"><i>🎥</i> Video Classes</a>
-            <a href="Assignments-student.html" class="nav-link"><i>📝</i> Assignments</a>
-            <a href="Quiz.html" class="nav-link on"><i>⏱️</i>  Quizzes</a>
-            <a href="Materials.html" class="nav-link"><i></i> 📄 Study Library</a>
-            ${sideLinks}
+            <a href="Dashboard-student.html" class="nav-link">🏠 Dashboard</a>
+            <a href="Tutorials.html" class="nav-link">🎥 Video Lessons</a>
+            <a href="Assignments-student.html" class="nav-link">✏️ Assignments</a>
+            <a href="Quiz.html" class="nav-link active">⏱️ Quizzes</a>
+            <a href="Materials.html" class="nav-link">📄 Study Library</a>
+            <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+            <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+            <a href="student-profile.html" class="nav-link">👤 My Profile</a>
+            <a href="Progress.html" class="nav-link">📊 My Reports</a>
+            <a href="Scoreboard.html" class="nav-link">🏆 Honor Board</a>
+            <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Sign Out</a>
         `;
         document.getElementById('student-view').style.display = 'block';
         loadStudentQuizzes();
@@ -193,14 +420,13 @@ async function loadTeacherDashboard() {
     const container = document.getElementById('teacher-quiz-rows');
     
     if (list.length === 0) {
-        container.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--muted);">No quizzes published yet.</td></tr>';
+        container.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--text-muted);">No quizzes published yet.</td></tr>';
         return;
     }
 
     container.innerHTML = list.map(q => {
-        // Build question preview HTML
         const qHtml = q.questions ? q.questions.map((item, i) => `
-            <div style="margin-bottom:10px; padding-bottom:5px; border-bottom:1px dashed #eee;">
+            <div style="margin-bottom:10px; padding-bottom:5px; border-bottom:1px dashed var(--border);">
                 <b>Q${i+1}:</b> ${item.question}<br>
                 <span style="font-size:0.75rem; color:var(--primary);">Correct: Option ${item.correct}</span>
             </div>
@@ -213,7 +439,7 @@ async function loadTeacherDashboard() {
                 <td>${q.q_count || 0} Qns</td>
                 <td>
                     <div style="display:flex; gap:10px;">
-                        <button class="btn" style="background:#f1f5f9; font-size:0.8rem;" onclick="toggleQuestions(${q.id})">👁 View</button>
+                        <button class="btn btn-ink" style="font-size:0.8rem;" onclick="toggleQuestions(${q.id})">👁 View</button>
                         <button class="btn btn-danger" onclick="deleteQuiz(${q.id})">Delete</button>
                     </div>
                     <div id="q-view-${q.id}" class="view-panel view-q-panel">${qHtml}</div>
@@ -250,7 +476,7 @@ function addQuestionToList() {
     if (!text || !opts[0] || !opts[1]) return alert("Enter question and at least 2 options.");
 
     tempQuestions.push({ question: text, options: opts, correct: correct });
-    document.getElementById('temp-list').innerHTML += `<div style="font-size:0.8rem; color:var(--primary); margin-bottom:5px;">✅ Added: ${text.substring(0,30)}...</div>`;
+    document.getElementById('temp-list').innerHTML += `<div style="font-size:0.85rem; color:var(--primary); margin-bottom:5px;">✅ Added: ${text.substring(0,30)}...</div>`;
     document.getElementById('currQ').value = '';
     ['optA','optB','optC','optD'].forEach(i => document.getElementById(i).value = '');
 }
@@ -276,15 +502,20 @@ async function loadStudentQuizzes() {
     allQuizzes = Array.isArray(data) ? data : (data.quizzes || []);
     const container = document.getElementById('quiz-container');
 
+    if (allQuizzes.length === 0) {
+        container.innerHTML = '<div class="empty-state"><h3>📭 No quizzes available.</h3></div>';
+        return;
+    }
+
     container.innerHTML = allQuizzes.map(q => {
         const isDone = q.attempted === true;
         return `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:1.5rem;">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:24px; margin-bottom: 0;">
                 <div>
-                    <h3 style="margin-bottom:5px;">${q.title}</h3>
-                    <span class="tag">${q.subject}</span> <span class="tag" style="background:#f1f5f9; color:#64748b;">⏱ ${q.duration}m</span>
+                    <h3 style="margin-bottom:8px; font-family:'Playfair Display'; font-size: 1.3rem;">${q.title}</h3>
+                    <span class="tag">${q.subject}</span> <span class="tag" style="background:rgba(255,255,255,0.05); color:var(--text-muted);">⏱ ${q.duration}m</span>
                 </div>
-                ${isDone ? `<span style="color:var(--primary); font-weight:700;">✅ Score: ${q.lastScore}/${q.lastTotal}</span>` 
+                ${isDone ? `<span style="color:var(--primary); font-weight:800; font-size: 1.1rem;">✅ Score: ${q.lastScore}/${q.lastTotal}</span>` 
                          : `<button class="btn btn-primary" onclick="startQuiz(${q.id})">Start Quiz →</button>`}
             </div>
         `;
@@ -307,7 +538,7 @@ function renderQuestion() {
     const keys = ['A', 'B', 'C', 'D'];
     document.getElementById('question-area').innerHTML = `
         <div class="card">
-            <h2 style="margin-bottom:1.5rem;">${q.question}</h2>
+            <h2 style="margin-bottom:1.5rem; font-family:'Playfair Display';">${q.question}</h2>
             ${opts.map((opt, i) => opt ? `<button class="option-btn ${userAnswers[currentIdx] === keys[i] ? 'selected' : ''}" onclick="saveAnswer('${keys[i]}')"><b>${keys[i]}.</b> ${opt}</button>` : '').join('')}
         </div>
     `;
@@ -341,6 +572,11 @@ async function handleQuizSubmission() {
     document.getElementById('res-pct').innerText = pct + '%';
     document.getElementById('res-title').innerText = pct >= 50 ? "Passed!" : "Try Again!";
     document.getElementById('res-desc').innerText = `You scored ${correct} out of ${activeQuiz.questions.length}.`;
+}
+
+function logout() {
+    sessionStorage.clear();
+    window.location.replace('Login.html');
 }
 </script>
 </body>

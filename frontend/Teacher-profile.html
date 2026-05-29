@@ -1,86 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Instructor Profile — Rural Learning</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
-<script src="api.js"></script>
-<script src="main.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Instructor Profile — Rural Learning</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+  <script src="api.js"></script>
+  <script src="main.js"></script>
 
-<style>
+  <style>
     :root {
-      --primary: #10b981;
-      --primary-dark: #065f46;
-      --bg-page: #f8fafc;
-      --sidebar: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      --primary: #52b788;
+      --primary-soft: rgba(82, 183, 136, 0.1);
+      --bg: #081c15;
+      --card: rgba(255, 255, 255, 0.04);
+      --sidebar: #0b251d;
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --border: rgba(82, 183, 136, 0.15);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      --accent: #f4a261;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-page); color: var(--text-main); opacity: 0; transition: opacity 0.5s ease; }
+    
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text); 
+      min-height: 100vh; 
+      opacity: 0; 
+      transition: opacity 0.5s ease;
+      overflow-y: auto;
+    }
+
+    /* background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+      pointer-events: none;
+    }
 
     .layout { display: flex; min-height: 100vh; }
 
     /* SIDEBAR */
-    .sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); padding: 40px 24px; position: sticky; top: 0; height: 100vh; }
-    .logo { font-family: 'Playfair Display'; font-size: 1.4rem; font-weight: 900; color: var(--text-main); text-decoration: none; margin-bottom: 40px; display: block; }
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 40px 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .logo { 
+      font-family: 'Playfair Display'; 
+      font-size: 1.5rem; 
+      font-weight: 900; 
+      text-decoration: none; 
+      color: var(--text); 
+      display: block; 
+      margin-bottom: 48px; 
+    }
     .logo span { color: var(--primary); }
-    
-    .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--text-muted); border-radius: 12px; margin-bottom: 6px; font-weight: 600; transition: 0.3s; }
-    .nav-link:hover, .nav-link.active { background: #f0fdf4; color: var(--primary); }
+
+    .nav-menu { list-style: none; flex-grow: 1; }
+    .nav-link { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding: 14px 16px; 
+      text-decoration: none; 
+      color: var(--text-muted); 
+      border-radius: 14px; 
+      font-weight: 600; 
+      transition: 0.3s; 
+      margin-bottom: 5px; 
+    }
+    .nav-link:hover, .nav-link.active { 
+      background: var(--primary-soft); 
+      color: var(--primary); 
+      box-shadow: 0 4px 20px rgba(82, 183, 136, 0.08);
+    }
+
+    .profile-footer {
+      background: var(--card); 
+      border: 1px solid var(--border);
+      padding: 12px; 
+      border-radius: 16px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+      margin-top: auto;
+    }
+    .profile-avatar { 
+      width: 36px; 
+      height: 36px; 
+      background: var(--primary); 
+      color: #081c15; 
+      border-radius: 10px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      font-size: 0.9rem; 
+    }
 
     /* CONTENT */
-    .main { flex: 1; padding: 40px 60px; max-width: 1200px; margin: 0 auto; width: 100%; }
-
-    /* PROFILE HEADER */
-    .hero { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 40px; display: flex; align-items: center; gap: 32px; margin-bottom: 32px; box-shadow: var(--shadow); }
-    .avatar-large { width: 100px; height: 100px; background: var(--primary); color: white; border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; }
-    .hero-info h2 { font-family: 'Playfair Display'; font-size: 2rem; margin-bottom: 4px; }
+    .main { 
+      flex: 1; 
+      padding: 40px 60px; 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      width: 100%; 
+      animation: fadeInUp 0.8s ease;
+    }
+    
+    .hero { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 32px; 
+      display: flex; 
+      align-items: center; 
+      gap: 24px; 
+      margin-bottom: 32px; 
+      box-shadow: var(--shadow); 
+      backdrop-filter: blur(10px);
+    }
+    .avatar-large { 
+      width: 80px; 
+      height: 80px; 
+      border-radius: 20px; 
+      background: var(--primary); 
+      color: #081c15; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 2.2rem; 
+      font-weight: 800; 
+    }
+    .hero-info h2 { font-family: 'Playfair Display'; font-size: 2rem; margin-bottom: 4px; color: var(--text); }
     .hero-info p { color: var(--text-muted); font-weight: 500; }
 
     /* GRID */
     .grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 32px; }
-    .card { background: white; border: 1px solid var(--border); border-radius: 24px; padding: 32px; margin-bottom: 32px; box-shadow: var(--shadow); }
-    .card-title { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1.2px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .card { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 32px; 
+      box-shadow: var(--shadow); 
+      backdrop-filter: blur(10px);
+    }
+    .card-title { 
+      font-family: 'Playfair Display'; 
+      font-size: 1.4rem; 
+      margin-bottom: 24px; 
+      color: var(--text); 
+    }
 
     /* FORMS */
     .fg { margin-bottom: 20px; }
-    label { display: block; font-size: 0.75rem; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
-    input { width: 100%; padding: 14px 18px; border: 1px solid var(--border); border-radius: 14px; font-size: 0.95rem; font-family: inherit; background: #fcfcfc; transition: 0.3s; color: var(--text-main); }
-    input:focus { border-color: var(--primary); background: white; outline: none; }
+    label { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 0.5px; }
+    
+    input { 
+      width: 100%; 
+      background: rgba(255, 255, 255, 0.02); 
+      border: 1.5px solid var(--border); 
+      padding: 14px; 
+      border-radius: 12px; 
+      font-size: 0.95rem; 
+      outline: none; 
+      transition: 0.3s; 
+      font-family: inherit; 
+      color: var(--text);
+    }
+    input:focus { 
+      border-color: var(--primary); 
+      background: rgba(82, 183, 136, 0.05); 
+    }
 
-    .btn-save { background: var(--primary); color: white; padding: 16px; border: none; border-radius: 14px; width: 100%; font-weight: 700; cursor: pointer; font-size: 1rem; transition: 0.3s; margin-top: 10px;}
-    .btn-save:hover { background: var(--primary-dark); transform: translateY(-2px); }
+    .btn-save { 
+      background: var(--primary); 
+      color: #081c15; 
+      padding: 16px; 
+      border-radius: 14px; 
+      font-weight: 700; 
+      border: none; 
+      cursor: pointer; 
+      width: 100%; 
+      font-size: 1rem; 
+      transition: 0.3s; 
+      box-shadow: 0 4px 15px rgba(82, 183, 136, 0.2);
+      margin-top: 10px;
+    }
+    .btn-save:hover { 
+      background: #409a71; 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 20px rgba(82, 183, 136, 0.3);
+    }
 
     /* STATS */
-    .stat-box { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #f1f5f9; }
+    .stat-box { display: flex; justify-content: space-between; padding: 16px 0; border-bottom: 1px solid var(--border); }
     .stat-box:last-child { border-bottom: none; }
-    .stat-label { font-weight: 600; color: var(--text-muted); }
-    .stat-num { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+    .stat-label { font-weight: 600; color: var(--text-muted); font-size: 0.9rem; }
+    .stat-num { font-weight: 800; color: var(--accent); font-size: 1.1rem; }
 
     #publicCardModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-    .modal-box { background: white; padding: 40px; border-radius: 30px; width: 400px; text-align: center; }
-</style>
+    .modal-box { background: var(--sidebar); border: 1px solid var(--border); padding: 40px; border-radius: 30px; width: 400px; text-align: center; box-shadow: var(--shadow); }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
 <div class="layout">
   <aside class="sidebar">
-    <a href="Dashboard-teacher.html" class="logo">Rural<span>Learning</span></a>
-    <nav>
-      <a href="Dashboard-teacher.html" class="nav-link">🏠 Overview</a>
+    <a href="#" class="logo">Rural<span>Learning</span></a>
+    <nav class="nav-menu">
+      <a href="Dashboard-teacher.html" class="nav-link">📊 Dashboard</a>
       <a href="Upload-video.html" class="nav-link">🎥 Video Lectures</a>
       <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
       <a href="Quiz.html" class="nav-link">⏱️ Quiz Creator</a>
-      <a href="Upload-materials.html" class="nav-link">📄 Study Notes</a>
-
-  
-      <a href="Chat.html" class="nav-link">💬 Class Messages</a>
+      <a href="Materials.html" class="nav-link">📄 Study Notes</a>
+      <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+      
+      <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
       <a href="Teacher-profile.html" class="nav-link active">👤 My Profile</a>
+      <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Logout Session</a>
     </nav>
   </aside>
 
@@ -118,23 +275,32 @@
         </form>
       </div>
 
-      <!-- STATS -->
+      <!-- STATS SECTION -->
       <aside>
-        <div class="card">
-          <h3 class="card-title">Your Impact</h3>
-          <div class="stat-box"><span class="stat-label">Videos</span><span class="stat-num" id="s-vids">0</span></div>
-          <div class="stat-box"><span class="stat-label">Notes</span><span class="stat-num" id="s-mats">0</span></div>
-          <div class="stat-box"><span class="stat-label">Quizzes</span><span class="stat-num" id="s-quiz">0</span></div>
-          <div class="stat-box" style="margin-top:10px; border-top:1px solid var(--border); padding-top:20px;">
-            <span class="stat-label">Student Enrollment</span>
-            <span class="stat-num" style="color: #6366f1;">12+</span>
+        <section class="card" style="margin-bottom: 24px;">
+          <h3 style="font-family: 'Playfair Display'; font-size: 1.4rem; margin-bottom: 20px;">Faculty Engagement</h3>
+          <div class="stat-box">
+            <span class="stat-label">🎞️ Lectures Published</span>
+            <span class="stat-num" id="s-vids">0</span>
           </div>
-        </div>
+          <div class="stat-box">
+            <span class="stat-label">📝 Quizzes Created</span>
+            <span class="stat-num" id="s-quiz">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">📂 Shared Resources</span>
+            <span class="stat-num" id="s-mats">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">👤 Portal Members</span>
+            <span class="stat-num" id="s-viewers">0</span>
+          </div>
+        </section>
 
-        <div class="card">
-          <h3 class="card-title">Public Preview</h3>
-          <button onclick="togglePublicCard(true)" style="background: var(--bg-page); border: 1px solid var(--border); padding: 12px; border-radius: 12px; width: 100%; cursor: pointer; font-weight: 700;">👁️ View Student Card</button>
-        </div>
+        <section class="card" style="background: rgba(82, 183, 136, 0.05); border-color: rgba(82, 183, 136, 0.25);">
+            <h4 style="margin-bottom: 8px; color: var(--primary);">Educator Badge</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">Thank you for your valuable contribution to the rural student community.</p>
+        </section>
       </aside>
     </div>
   </main>
@@ -144,7 +310,7 @@
 <div id="publicCardModal">
     <div class="modal-box">
         <div class="avatar-large" id="modal-init" style="margin: 0 auto 20px; width: 80px; height: 80px;">?</div>
-        <h2 id="modal-name">Name</h2>
+        <h2 id="modal-name" style="color: var(--text);">Name</h2>
         <p id="modal-sub" style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">Subject</p>
         <button onclick="togglePublicCard(false)" style="color: var(--text-muted); background: none; border: none; font-weight: 700; cursor: pointer;">Close Preview</button>
     </div>
@@ -152,21 +318,16 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        // 1. Get Session
         const user = getUser();
-        if (!user || user.role !== 'teacher') { window.location.replace('login.html'); return; }
+        if (!user || user.role !== 'teacher') { window.location.replace('Login.html'); return; }
 
-        // 2. Fetch Fresh Data from MySQL (The "Pro" Way)
         try {
             const res = await AuthAPI.getProfile();
             if (res && res.success) {
-                // Update everything with real DB data
                 const freshData = res.user;
                 populateUI(freshData);
-                localStorage.setItem('currentUser', JSON.stringify(freshData));
-            } else {
-                populateUI(user);
-            }
+                sessionStorage.setItem('currentUser', JSON.stringify(freshData));
+            } else { populateUI(user); }
         } catch (e) { populateUI(user); }
 
         syncStats();
@@ -185,25 +346,31 @@
     }
 
     async function syncStats() {
-        // Count locally stored items
-        const vids = JSON.parse(localStorage.getItem('rl_vids_v3') || '[]');
-        const quiz = JSON.parse(localStorage.getItem('rl_quizzes') || '[]');
-        
-        document.getElementById('s-vids').innerText = vids.length;
-        document.getElementById('s-quiz').innerText = quiz.length;
-
-        // Fetch materials from API
         try {
-            const mats = await ContentAPI.getMaterials();
-            document.getElementById('s-mats').innerText = mats.length || 0;
-        } catch(e) { }
+            const videos = await apiCall('/videos', 'GET');
+            document.getElementById('s-vids').innerText = Array.isArray(videos) ? videos.length : 0;
+        } catch(e) { console.error(e); }
+
+        try {
+            const quizzes = await apiCall('/quizzes', 'GET');
+            document.getElementById('s-quiz').innerText = Array.isArray(quizzes) ? quizzes.length : 0;
+        } catch(e) { console.error(e); }
+
+        try {
+            const res = await apiCall('/auth/engagement', 'GET');
+            document.getElementById('s-viewers').innerText = res.count || 0;
+        } catch(e) { console.error(e); }
+
+        try {
+            const mats = await apiCall('/materials', 'GET');
+            document.getElementById('s-mats').innerText = Array.isArray(mats) ? mats.length : 0;
+        } catch(e) { console.error(e); }
     }
 
-    // THE EDIT LOGIC
     document.getElementById('profile-form').onsubmit = async (e) => {
         e.preventDefault();
         const btn = document.getElementById('btn-submit');
-        btn.innerText = "⏳ Saving Changes...";
+        btn.innerText = "⏳ Saving...";
         btn.disabled = true;
 
         const updated = {
@@ -216,9 +383,8 @@
         try {
             const res = await AuthAPI.updateProfile(updated);
             if (res && res.success) {
-                alert("✨ Profile successfully updated in MySQL!");
-                // Refresh session and UI
-                localStorage.setItem('currentUser', JSON.stringify({...getUser(), ...updated}));
+                alert("✨ Profile successfully updated!");
+                sessionStorage.setItem('currentUser', JSON.stringify({...getUser(), ...updated}));
                 location.reload(); 
             } else {
                 alert("Error: " + (res.message || "Failed to save"));
@@ -240,6 +406,11 @@
             document.getElementById('modal-sub').innerText = user.expertSubject || "Faculty";
             modal.style.display = 'flex';
         } else { modal.style.display = 'none'; }
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.replace('Login.html');
     }
 </script>
 </body>

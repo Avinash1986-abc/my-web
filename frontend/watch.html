@@ -4,32 +4,102 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Watching Lesson — Rural Learning Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
   
   <script src="api.js"></script>
   <script src="main.js"></script>
 
   <style>
     :root {
-      --bg: #ffffff;
-      --bg-alt: #f8fafc;
       --primary: #52b788;
-      --text-dark: #0f172a;
-      --border: #e2e8f0;
+      --primary-soft: rgba(82, 183, 136, 0.1);
+      --bg: #081c15;
+      --card: rgba(255, 255, 255, 0.04);
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --border: rgba(82, 183, 136, 0.15);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      --accent: #f4a261;
     }
+    
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Outfit', sans-serif; background: var(--bg-alt); color: var(--text-dark); padding: 40px; }
     
-    .player-container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text); 
+      padding: 40px; 
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+      pointer-events: none;
+    }
     
-    .video-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 15px; overflow: hidden; margin-bottom: 20px; }
+    .player-container { 
+      width: 100%;
+      max-width: 1000px; 
+      margin: 0 auto; 
+      background: var(--card); 
+      padding: 24px; 
+      border-radius: 24px; 
+      box-shadow: var(--shadow); 
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    
+    .video-wrapper { 
+      width: 100%; 
+      aspect-ratio: 16/9; 
+      background: #000; 
+      border-radius: 16px; 
+      overflow: hidden; 
+      margin-bottom: 20px; 
+      border: 1px solid var(--border);
+    }
     video { width: 100%; height: 100%; outline: none; }
 
-    .video-info h1 { font-size: 1.8rem; margin-bottom: 10px; }
-    .back-btn { display: inline-block; margin-bottom: 20px; text-decoration: none; color: var(--primary); font-weight: 700; font-size: 0.9rem; }
+    .video-info h1 { font-family: 'Playfair Display'; font-size: 2rem; margin-bottom: 8px; color: var(--text); }
+    
+    .back-btn { 
+      display: inline-block; 
+      margin-bottom: 20px; 
+      text-decoration: none; 
+      color: var(--primary); 
+      font-weight: 700; 
+      font-size: 0.95rem; 
+      transition: 0.3s;
+    }
+    .back-btn:hover {
+      text-shadow: 0 0 8px rgba(82, 183, 136, 0.4);
+    }
     
     /* Loading state */
-    .loading-overlay { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 100; transition: opacity 0.5s; }
+    .loading-overlay { 
+      position: fixed; 
+      inset: 0; 
+      background: var(--bg); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 100; 
+      transition: opacity 0.5s; 
+    }
+    .loading-overlay h2 {
+      font-family: 'Playfair Display';
+      font-size: 2rem;
+      color: var(--primary);
+    }
   </style>
 </head>
 <body>
@@ -37,10 +107,9 @@
   <div class="loading-overlay" id="loader"><h2>Loading Lecture...</h2></div>
 
   <div class="player-container">
-    <a href="Tutorials.html" class="back-btn">← Back to Library</a>
+    <a href="Tutorials.html" class="back-btn" id="back-link">← Back to Lessons</a>
     
     <div class="video-wrapper">
-      <!-- The Video Player -->
       <video id="main-player" controls controlsList="nodownload">
         <source id="video-src" src="" type="video/mp4">
         Your browser does not support the video tag.
@@ -49,7 +118,7 @@
 
     <div class="video-info">
       <h1 id="video-title">Lesson Title</h1>
-      <p style="color: #64748b;">You are watching a verified lecture from the Rural Learning Portal.</p>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">You are watching a verified lecture from the Rural Learning Portal.</p>
     </div>
   </div>
 
@@ -58,31 +127,38 @@
 
         // ── 1. AUTH GUARD ──
         const user = getUser();
-        if (!user) { window.location.replace('login.html'); return; }
+        if (!user) { window.location.replace('Login.html'); return; }
+
+        // Adjust back button path dynamically based on role to avoid redirect loops
+        const backLink = document.getElementById('back-link');
+        if (user.role === 'teacher') {
+            backLink.href = 'Upload-video.html';
+            backLink.innerText = '← Back to Video Studio';
+        } else {
+            backLink.href = 'Tutorials.html';
+            backLink.innerText = '← Back to Lessons';
+        }
 
         // ── 2. READ URL PARAMS ──
         const params     = new URLSearchParams(window.location.search);
-        const videoUrl   = params.get('url');     // e.g. /uploads/videos/xxx.mp4
-        const videoTitle = params.get('title');   // ✅ FIXED: was undefined before
+        const videoUrl   = params.get('url');     
+        const videoTitle = params.get('title');   
 
-        // Guard: if no URL param, go back
         if (!videoUrl) {
             alert("Video link is missing.");
-            window.location.href = 'tutorials.html';
+            window.location.href = user.role === 'teacher' ? 'Upload-video.html' : 'Tutorials.html';
             return;
         }
 
         // ── 3. SET PLAYER SOURCE ──
-        const backendBase = "http://localhost:5000";
-        const player      = document.getElementById('main-player');  // ✅ FIXED: was 'main-video-player'
+        const player      = document.getElementById('main-player');  
         const source      = document.getElementById('video-src');
         const titleEl     = document.getElementById('video-title');
 
-        // Set title (fallback to 'Lesson' if missing)
-        titleEl.innerText = videoTitle ? decodeURIComponent(videoTitle) : 'Lesson'; // ✅ FIXED
+        titleEl.innerText = videoTitle ? decodeURIComponent(videoTitle) : 'Lesson'; 
 
         // Set video source and reload player
-        source.src = videoUrl.startsWith('http') ? videoUrl : backendBase + videoUrl;
+        source.src = videoUrl.startsWith('http') ? videoUrl : ROOT_URL + videoUrl;
         player.load();
 
         // ── 4. HIDE LOADER ──

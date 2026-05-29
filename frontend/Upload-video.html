@@ -3,84 +3,264 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Video Studio — RuralLearning</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<title>Video Studio — Rural Learning</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <script src="api.js"></script>
 <script src="main.js"></script>
+
 <style>
-/* ── RESET & BASE ── */
-:root{--green:#16a34a;--green-lt:#dcfce7;--green-dk:#14532d;--ink:#111827;--muted:#6b7280;--border:#e5e7eb;--bg:#f9fafb;--white:#fff;--red:#ef4444;}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;opacity:0;transition:opacity .3s;}
+    :root {
+      --primary: #52b788;
+      --primary-soft: rgba(82, 183, 136, 0.1);
+      --bg: #081c15;
+      --card: rgba(255, 255, 255, 0.04);
+      --sidebar: #0b251d;
+      --text: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.6);
+      --border: rgba(82, 183, 136, 0.15);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      --accent: #f4a261;
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.15);
+    }
 
-.wrap{display:flex;min-height:100vh;position:relative;z-index:1;}
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: var(--bg); 
+      color: var(--text); 
+      min-height: 100vh; 
+      opacity: 0; 
+      transition: opacity 0.5s ease;
+      display: flex;
+    }
 
-/* ── SIDEBAR ── */
-.side{width:245px;background:var(--white);border-right:1px solid var(--border);padding:1.8rem 1.2rem;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;flex-shrink:0;}
-.logo{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--ink);text-decoration:none;margin-bottom:2.5rem;display:block;}
-.logo b{color:var(--green);}
-.nav{list-style:none;}
-.nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;text-decoration:none;color:var(--muted);font-size:.875rem;font-weight:500;transition:.2s;}
-.nav a:hover,.nav a.on{background:var(--green-lt);color:var(--green-dk);font-weight:600;}
-.prof{margin-top:auto;display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:10px;}
-.av{width:34px;height:34px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;}
+    /* background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle at 80% 20%, rgba(82, 183, 136, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(244, 162, 97, 0.03) 0%, transparent 40%);
+      pointer-events: none;
+    }
 
-/* ── MAIN CONTENT ── */
-.main{flex:1;padding:2.5rem 2.8rem;max-width:1000px;}
-.page-head{margin-bottom:2rem;}
-.page-head h1{font-family:'DM Serif Display',serif;font-size:2rem;}
+    .wrap { display: flex; width: 100%; min-height: 100vh; }
 
-/* ── UPLOAD BOX ── */
-.card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:2rem;margin-bottom:2.5rem;box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);}
-.card-title{font-size:1.1rem;font-weight:700;margin-bottom:1.5rem;}
-.upload-grid{display:grid;grid-template-columns: 1.2fr 1fr; gap: 30px;}
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      padding: 40px 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo { 
+      font-family: 'Playfair Display'; 
+      font-size: 1.5rem; 
+      font-weight: 900; 
+      text-decoration: none; 
+      color: var(--text); 
+      display: block; 
+      margin-bottom: 48px; 
+    }
+    .logo span { color: var(--primary); }
 
-.fg{margin-bottom:1.1rem;}
-label{display:block;font-size:.75rem;font-weight:700;margin-bottom:6px;text-transform:uppercase;color:var(--ink);}
-input, select{width:100%;padding:12px;border:1px solid var(--border);border-radius:10px;background:#fcfcfc;}
+    .nav-menu { list-style: none; flex-grow: 1; }
+    .nav-link { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      padding: 14px 16px; 
+      text-decoration: none; 
+      color: var(--text-muted); 
+      border-radius: 14px; 
+      font-weight: 600; 
+      transition: 0.3s; 
+      margin-bottom: 5px; 
+    }
+    .nav-link:hover, .nav-link.active { 
+      background: var(--primary-soft); 
+      color: var(--primary); 
+      box-shadow: 0 4px 20px rgba(82, 183, 136, 0.08);
+    }
 
-/* ── DROPZONE & BUTTON ── */
-.drop-mini{border:2px dashed var(--border);border-radius:15px;padding:20px;text-align:center;background:#fff;margin-bottom:15px;cursor:pointer;}
-.btn-pub{width:100%;padding:14px;background:#5cb885;color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+    .profile-footer {
+      background: var(--card); 
+      border: 1px solid var(--border);
+      padding: 12px; 
+      border-radius: 16px; 
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+      margin-top: auto;
+    }
+    .profile-avatar { 
+      width: 36px; 
+      height: 36px; 
+      background: var(--primary); 
+      color: #081c15; 
+      border-radius: 10px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-weight: 800; 
+      font-size: 0.9rem; 
+    }
 
-/* ── TABLE STYLING (The fix) ── */
-.table-card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:1.5rem;overflow:hidden;}
-table{width:100%;border-collapse:collapse;text-align:left;}
-th{font-size:.7rem;font-weight:700;text-transform:uppercase;color:var(--muted);padding:15px;border-bottom:1px solid var(--border);}
-td{padding:15px;font-size:.85rem;border-bottom:1px solid #f3f4f6;cursor:pointer;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:#f9fafb;}
-.t-title{font-weight:700;color:var(--ink);}
-.t-del{color:var(--red);font-weight:600;background:none;border:none;cursor:pointer;}
-.t-tag{background:var(--green-lt);color:var(--green-dk);padding:2px 8px;border-radius:5px;font-size:.7rem;font-weight:700;}
+    /* ── MAIN CONTENT ── */
+    .main { 
+      flex: 1; 
+      padding: 40px 60px; 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      width: 100%;
+      animation: fadeInUp 0.8s ease;
+    }
+    
+    .page-head h1 { font-family: 'Playfair Display'; font-size: 2.2rem; margin-bottom: 32px; }
 
-/* Progress Bar */
-.prog-box{display:none;margin-top:10px;}
-.prog-bar{height:6px;background:var(--border);border-radius:10px;overflow:hidden;}
-.prog-fill{height:100%;background:var(--green);width:0%;transition:0.3s;}
+    .card { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 32px; 
+      margin-bottom: 32px; 
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .upload-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; }
+    .fg { margin-bottom: 1.1rem; }
+    label { display: block; font-size: 0.7rem; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; }
+    
+    input { 
+      width: 100%; 
+      padding: 12px 16px; 
+      border: 1px solid var(--border); 
+      border-radius: 12px; 
+      background: rgba(255,255,255,0.02); 
+      font-family: inherit; 
+      color: var(--text);
+      outline: none;
+      transition: 0.3s;
+    }
+    input:focus {
+      border-color: var(--primary);
+      background: rgba(82, 183, 136, 0.05);
+    }
+
+    .drop-mini { 
+      border: 2px dashed var(--border); 
+      border-radius: 16px; 
+      padding: 32px; 
+      text-align: center; 
+      background: rgba(255,255,255,0.01); 
+      margin-bottom: 16px; 
+      cursor: pointer; 
+      transition: 0.3s; 
+    }
+    .drop-mini:hover { 
+      border-color: var(--primary); 
+      background: rgba(82, 183, 136, 0.04); 
+    }
+    
+    .btn-pub { 
+      width: 100%; 
+      padding: 14px; 
+      background: var(--primary); 
+      color: #081c15; 
+      border: none; 
+      border-radius: 12px; 
+      font-weight: 800; 
+      cursor: pointer; 
+      font-size: 1rem; 
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(82, 183, 136, 0.2);
+    }
+    .btn-pub:hover {
+      background: #409a71;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(82, 183, 136, 0.3);
+    }
+
+    /* ── TABLE ── */
+    .table-card { 
+      background: var(--card); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 24px; 
+      overflow: hidden; 
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); padding: 18px 24px; border-bottom: 1px solid var(--border); letter-spacing: 0.5px; }
+    td { padding: 18px 24px; font-size: 0.9rem; border-bottom: 1px solid var(--border); color: var(--text); }
+    tr:last-child td { border-bottom: none; }
+    
+    .t-title { font-weight: 700; cursor: pointer; transition: 0.2s; }
+    .t-title:hover { color: var(--primary); }
+    .t-tag { 
+      background: var(--primary-soft); 
+      color: var(--primary); 
+      padding: 4px 12px; 
+      border-radius: 6px; 
+      font-size: 0.75rem; 
+      font-weight: 800;
+      border: 1px solid rgba(82, 183, 136, 0.15);
+    }
+    .v-count-badge { 
+      background: var(--primary-soft); 
+      color: var(--primary); 
+      padding: 4px 12px; 
+      border-radius: 50px; 
+      font-size: 0.8rem; 
+      margin-left: 12px; 
+      font-weight: 800;
+      border: 1px solid rgba(82, 183, 136, 0.15);
+    }
+
+    /* Progress */
+    .prog-box { display: none; margin-top: 15px; }
+    .prog-bar { height: 8px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; margin-top: 6px; }
+    .prog-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.2s; }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 </head>
 <body>
 
 <div class="wrap">
-    <aside class="side">
-        <a href="#" class="logo">Rural<b>Learning</b></a>
-        <ul class="nav">
-            <a href="Dashboard-teacher.html" class="nav-link active">📊  Dashboard</a>
-            <a href="Upload-video.html" class="nav-link">🎥 Video Lectures</a>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="#" class="logo">Rural<span>Learning</span></a>
+        <nav class="nav-menu">
+            <a href="Dashboard-teacher.html" class="nav-link">📊 Dashboard</a>
+            <a href="Upload-video.html" class="nav-link active">🎥 Video Lectures</a>
             <a href="Assignments.html" class="nav-link">✏️ Student Tasks</a>
             <a href="Quiz.html" class="nav-link">⏱️ Quiz Creator</a>
-            <a href="Upload-materials.html" class="nav-link">📄 Study Notes</a>
-        
-      <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
-           <a href="student-profile.html" class="nav-link">👤 My Profile</a>      
-        </ul>
-
-        <div class="prof">
-            <div class="av" id="av">A</div>
+            <a href="Materials.html" class="nav-link">📄 Study Notes</a>
+            <a href="Chat.html" class="nav-link">💬 Classroom Chat</a>
+            
+            <div style="margin: 40px 0 10px; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Personal Analytics</div>
+            <a href="Teacher-profile.html" class="nav-link">👤 My Profile</a>
+            <a href="#" onclick="logout()" class="nav-link" style="color: #ef4444; margin-top: 40px;">🚪 Logout Session</a>
+        </nav>
+        <div class="profile-footer">
+            <div class="profile-avatar" id="footer-init">?</div>
             <div>
-                <div id="uname" style="font-weight:700;font-size:.8rem;">Akash Zirli</div>
-                <div style="font-size:.65rem;color:var(--muted);">Faculty Member</div>
+                <div id="footer-name" style="font-weight:700; font-size:0.85rem; color: var(--text);">Loading...</div>
+                <div id="footer-class" style="font-size:0.7rem; color:var(--text-muted);">fetching profile</div>
             </div>
         </div>
     </aside>
@@ -88,9 +268,8 @@ tr:hover td{background:#f9fafb;}
     <main class="main">
         <div class="page-head"><h1>Video Studio</h1></div>
 
-        <!-- UPLOAD SECTION -->
         <div class="card">
-            <div class="card-title">Upload 1GB Lecture</div>
+            <div style="font-family: 'Playfair Display'; font-size: 1.3rem; font-weight: 800; margin-bottom: 1.5rem;">Upload Lecture Video</div>
             <div class="upload-grid">
                 <div>
                     <div class="fg"><label>Video Title</label><input id="vTitle" type="text" placeholder="e.g. Chapter 1: Introduction"></div>
@@ -99,15 +278,16 @@ tr:hover td{background:#f9fafb;}
                 </div>
                 <div>
                     <div class="drop-mini" onclick="document.getElementById('fi').click()">
-                        <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px;">Select MP4 Video (Max 1GB)</div>
+                        <span style="font-size: 2rem; display: block; margin-bottom: 10px;">🎞️</span>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Click to select MP4 Video (Max 1GB)</p>
                         <input type="file" id="fi" accept="video/*" hidden>
-                        <span id="fname" style="font-size:.75rem;font-weight:600;">No file chosen</span>
+                        <div id="fname" style="margin-top: 10px; font-weight: 700; font-size: 0.75rem; color: var(--primary);">No file chosen</div>
                     </div>
                     <button class="btn-pub" id="pubBtn">🚀 PUBLISH VIDEO</button>
                     
                     <div class="prog-box" id="progBox">
-                        <div style="display:flex;justify-content:space-between;font-size:.7rem;margin-bottom:5px;">
-                            <span>Uploading...</span><span id="progPct">0%</span>
+                        <div style="display:flex; justify-content:space-between; font-size:.7rem; font-weight: 800;">
+                            <span>Uploading Stream...</span><span id="progPct">0%</span>
                         </div>
                         <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
                     </div>
@@ -115,129 +295,142 @@ tr:hover td{background:#f9fafb;}
             </div>
         </div>
 
-        <!-- TABLE SECTION -->
-        <h3 style="margin-bottom:15px;">Your Uploaded Lessons</h3>
+        <h3 style="font-family: 'Playfair Display'; font-size: 1.4rem; margin-bottom:1.5rem; display: flex; align-items: center; font-weight: 800;">
+            Your Uploaded Lessons <span id="vCount" class="v-count-badge">0</span>
+        </h3>
+        
         <div class="table-card">
             <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Subject</th>
-                        <th>Class</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="vTableBody">
-                    <!-- Rows injected here -->
-                </tbody>
+                <thead><tr><th>Title</th><th>Subject</th><th>Class</th><th>Date</th><th>Action</th></tr></thead>
+                <tbody id="vTableBody"></tbody>
             </table>
         </div>
     </main>
 </div>
 
 <script>
-const KEY = 'rl_vids_v3';
-const getVids = () => JSON.parse(localStorage.getItem(KEY) || '[]');
-const setVids = a => localStorage.setItem(KEY, JSON.stringify(a));
+let selFile = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+    const user = getUser();
+    if(!user || user.role !== 'teacher') return window.location.replace('Login.html');
+
+    // UI Identity
+    document.getElementById('footer-name').innerText = user.name;
+    document.getElementById('footer-class').innerText = "Faculty Member";
+    document.getElementById('footer-init').innerText = user.name.charAt(0).toUpperCase();
+
     document.getElementById('pubBtn').onclick = doUpload;
     document.getElementById('fi').onchange = e => {
-        if(e.target.files[0]) document.getElementById('fname').innerText = e.target.files[0].name;
+        if(e.target.files[0]) {
+            selFile = e.target.files[0];
+            document.getElementById('fname').innerText = selFile.name;
+        }
     };
-    loadFromServer();
+
+    // Load initial list from MySQL
+    loadVideosFromDB();
+    
     document.body.style.opacity = '1';
 });
 
-async function loadFromServer() {
+async function loadVideosFromDB() {
     try {
-        const res = await ContentAPI.getVideos();
-        if (res && Array.isArray(res)) {
-            // Keep server videos as the primary data
-            const server = res.map(v => ({
-                id: 'srv_' + v.id, title: v.title, subject: v.subject || 'General',
-                cls: v.targetClass || '', date: new Date(v.created_at).toLocaleDateString(),
-                videoUrl: v.videoUrl, source: 'server'
-            }));
-            setVids(server);
+        const videos = await ContentAPI.getVideos();
+        const body = document.getElementById('vTableBody');
+        const counter = document.getElementById('vCount');
+
+        if(counter) counter.innerText = videos.length || 0;
+
+        if (!videos || videos.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:40px; color:var(--text-muted);">No lessons found in database.</td></tr>';
+            return;
         }
-    } catch(e) { console.warn("Server sync failed"); }
-    render();
+
+        body.innerHTML = videos.map(v => {
+            const fullUrl = `http://localhost:5000${v.videoUrl}`;
+            return `
+                <tr>
+                    <td class="t-title" onclick="window.location.href='watch.html?url=${encodeURIComponent(fullUrl)}&title=${encodeURIComponent(v.title)}'">
+                        ${v.title}
+                    </td>
+                    <td><span class="t-tag">${v.subject}</span></td>
+                    <td>${v.targetClass || '—'}</td>
+                    <td>${new Date(v.created_at).toLocaleDateString()}</td>
+                    <td><button onclick="deleteVideo(${v.id})" style="color:var(--red); background:none; border:none; cursor:pointer; font-weight:700;">Delete</button></td>
+                </tr>
+            `;
+        }).join('');
+
+    } catch(e) { 
+        console.error("Load failed", e); 
+        document.getElementById('vTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center; color:red; padding:20px;">Error connecting to MySQL.</td></tr>';
+    }
 }
 
 async function doUpload() {
-    const file = document.getElementById('fi').files[0];
-    if (!file) return alert("Select a file");
+    if(!selFile) return alert("Please select a video file first.");
+    
+    const title = document.getElementById('vTitle').value.trim();
+    const subject = document.getElementById('vSubject').value.trim();
+    const targetClass = document.getElementById('vClass').value.trim();
+    
+    if(!title || !subject) return alert("Please fill in Title and Subject.");
 
     const btn = document.getElementById('pubBtn');
-    const pb = document.getElementById('progBox');
-    btn.disabled = true; pb.style.display = 'block';
+    const pb  = document.getElementById('progBox');
+    btn.disabled = true;
+    pb.style.display = 'block';
 
+    const fd = new FormData();
+    fd.append('video', selFile);
+    fd.append('title', title);
+    fd.append('subject', subject);
+    fd.append('targetClass', targetClass);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.onprogress = (e) => {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        document.getElementById('progFill').style.width = pct + '%';
+        document.getElementById('progPct').innerText = pct + '%';
+    };
+    xhr.onload = () => {
+        if (xhr.status < 300) {
+            alert("✅ Video Published Successfully!");
+            window.location.reload();
+        } else {
+            let msg = "Upload failed";
+            try { msg = JSON.parse(xhr.responseText).message || msg; } catch(e) {}
+            alert("❌ Error: " + msg);
+            btn.disabled = false;
+            btn.innerText = "🚀 PUBLISH VIDEO";
+            pb.style.display = 'none';
+        }
+    };
+     
+    xhr.onerror = () => {
+        alert("❌ Network Error — is server.js running on port 5000?");
+        btn.disabled = false;
+        btn.innerText = "🚀 PUBLISH VIDEO";
+    };
+
+    xhr.open("POST", BASE_URL + "/videos/upload");
+    xhr.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem('rlt_token'));
+    xhr.send(fd);
+}
+
+async function deleteVideo(id) {
+    if(!confirm("Remove this lecture?")) return;
     try {
-        await xhrUpload(file, pct => {
-            document.getElementById('progFill').style.width = pct + '%';
-            document.getElementById('progPct').innerText = pct + '%';
-        });
-
-        // After successful upload, refresh the table from server
-        await loadFromServer();
-        alert("Published successfully!");
-        
-        // Reset Form
-        pb.style.display = 'none';
-        btn.disabled = false;
-        document.getElementById('fi').value = '';
-        document.getElementById('fname').innerText = 'No file chosen';
-    } catch(err) {
-        alert("Upload failed");
-        btn.disabled = false;
-    }
+        await ContentAPI.deleteVideo(id);
+        loadVideosFromDB();
+    } catch(e) { alert("Delete failed"); }
 }
 
-function xhrUpload(file, onProg) {
-    return new Promise((res, rej) => {
-        const fd = new FormData();
-        fd.append('video', file);
-        fd.append('title', document.getElementById('vTitle').value || file.name);
-        fd.append('subject', document.getElementById('vSubject').value);
-        fd.append('targetClass', document.getElementById('vClass').value);
-        
-        const xhr = new XMLHttpRequest();
-        xhr.upload.onprogress = e => onProg(Math.round(e.loaded/e.total*100));
-        xhr.onload = () => (xhr.status<300) ? res() : rej();
-        xhr.open('POST', 'http://localhost:5000/api/videos/upload');
-        const t = localStorage.getItem('rlt_token');
-        if (t) xhr.setRequestHeader('Authorization', 'Bearer ' + t);
-        xhr.send(fd);
-    });
-}
-
-async function delVid(id, e) {
-    e.stopPropagation();
-    if(!confirm("Delete this lesson?")) return;
-    if(id.startsWith('srv_')) await ContentAPI.deleteVideo(id.replace('srv_', ''));
-    setVids(getVids().filter(v => v.id !== id));
-    render();
-}
-
-function render() {
-    const vids = getVids();
-    const body = document.getElementById('vTableBody');
-    if(!vids.length) {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:40px;">No lessons uploaded yet.</td></tr>';
-        return;
-    }
-
-    body.innerHTML = vids.reverse().map(v => `
-        <tr onclick="window.location.href='watch.html?url=${encodeURIComponent(v.videoUrl)}&title=${encodeURIComponent(v.title)}'">
-            <td class="t-title">${v.title}</td>
-            <td><span class="t-tag">${v.subject}</span></td>
-            <td>${v.cls || '—'}</td>
-            <td>${v.date || '—'}</td>
-            <td><button class="t-del" onclick="delVid('${v.id}', event)">Delete</button></td>
-        </tr>
-    `).join('');
+function logout() {
+    sessionStorage.clear();
+    window.location.replace('Login.html');
 }
 </script>
 </body>

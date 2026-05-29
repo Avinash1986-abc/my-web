@@ -8,8 +8,8 @@ async function migrate() {
     try {
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST || 'localhost',
-            user: 'root',
-            password: ''
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : ''
         });
 
         console.log('✅ Connected! Running migrations...');
@@ -164,6 +164,47 @@ async function migrate() {
                     attemptedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (quizId) REFERENCES quizzes(id) ON DELETE CASCADE,
                     FOREIGN KEY (studentId) REFERENCES users(id) ON DELETE CASCADE
+                )
+            `);
+        }
+
+        // Create video_progress table if it doesn't exist
+        console.log('🔄 Checking video_progress table...');
+        const [vpTables] = await connection.query(`
+            SHOW TABLES LIKE 'video_progress'
+        `);
+        
+        if (vpTables.length === 0) {
+            console.log('➕ Creating video_progress table...');
+            await connection.query(`
+                CREATE TABLE IF NOT EXISTS video_progress (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    student_id INT NOT NULL,
+                    video_id INT NOT NULL,
+                    watched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE
+                )
+            `);
+        }
+
+        // Create messages table if it doesn't exist
+        console.log('🔄 Checking messages table...');
+        const [msgTables] = await connection.query(`
+            SHOW TABLES LIKE 'messages'
+        `);
+        
+        if (msgTables.length === 0) {
+            console.log('➕ Creating messages table...');
+            await connection.query(`
+                CREATE TABLE IF NOT EXISTS messages (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    sender_id INT NOT NULL,
+                    receiver_id INT NOT NULL,
+                    message TEXT NOT NULL,
+                    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+                    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
                 )
             `);
         }

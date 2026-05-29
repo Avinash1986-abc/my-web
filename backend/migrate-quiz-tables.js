@@ -8,8 +8,8 @@ async function migrateQuizTables() {
     try {
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST || 'localhost',
-            user: 'root',
-            password: '' // Empty password
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : ''
         });
 
         console.log('✅ Connected! Adding quiz tables...');

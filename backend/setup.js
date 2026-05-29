@@ -6,11 +6,11 @@ async function setup() {
     console.log('📡 Attempting to connect to MySQL...');
     
     try {
-        // We connect with an empty password specifically
+        // Read DB password from environment if configured, otherwise default to empty
         const connection = await mysql.createConnection({
             host: process.env.DB_HOST || 'localhost',
-            user: 'root',
-            password: '' // Forces empty password
+            user: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD !== undefined ? process.env.DB_PASSWORD : ''
         });
 
         console.log('✅ Connected! Creating professional database...');
@@ -135,6 +135,31 @@ async function setup() {
                 attemptedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (quizId) REFERENCES quizzes(id) ON DELETE CASCADE,
                 FOREIGN KEY (studentId) REFERENCES users(id) ON DELETE CASCADE
+            )
+        `);
+
+        // Create the Video Progress Table
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS video_progress (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                student_id INT NOT NULL,
+                video_id INT NOT NULL,
+                watched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (video_id) REFERENCES videos(id) ON DELETE CASCADE
+            )
+        `);
+
+        // Create the Chat Messages Table
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS messages (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                sender_id INT NOT NULL,
+                receiver_id INT NOT NULL,
+                message TEXT NOT NULL,
+                sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
             )
         `);
 
